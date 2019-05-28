@@ -34,6 +34,7 @@
  */
 exports.verification = (req,res) => {
     try{
+        console.log(req.decoded.payload.email)
         var responce = { }
        userServices.verification(req,(err,result) => {
            

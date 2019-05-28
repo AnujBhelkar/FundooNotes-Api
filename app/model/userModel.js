@@ -47,12 +47,12 @@
   function Model() { }
 
   Model.prototype.registration = (req,res) => {
-        model.findOne({ 'email' : req.email },async(err,data) => {
+        model.findOne({ 'email' : req.email },(err,data) => {
             if(err){
                 console.log('Error in Registration ', err);
                 res(err)
             }
-            else if(data !== null){
+            else if(data != null){
                 console.log("Email Already Exists")
                 res(err)
             }
@@ -138,7 +138,7 @@ Model.prototype.login =(req,res) =>{
             res(err)
         }
         else if(!result.isVerified){
-            console.log("verify or not ",model.isVerified)
+          //  console.log("verify or not ",model.isVerified)
             console.log("verify First..!!");
             res(err)
         }
@@ -176,7 +176,7 @@ Model.prototype.verifyUser = (req,res) => {
             console.log("token",token)
             var url = `http://localhost:4000/resetPassword/${token}` ;
             console.log('Url',url)
-            //mail.sendEmail(url,newUser.email,pass);
+            //mail.sendEmail(url,req.email);
             console.log("User Available")
             res(null,result)
         }

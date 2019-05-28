@@ -1,0 +1,12 @@
+{
+    "registration" : {
+        "firstName" : "Anuj",
+        "lastName"  : "Bhelkar",
+        "email"     : "anujbhelkar@gmail.com",
+        "password"  : "123456"
+    },
+    "emailVerification" : {
+        "token"     : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYW51amJoZWxrYXJAZ21haWwuY29tIn0sImlhdCI6MTU1OTA0OTQ2MCwiZXhwIjoxNTU5MTM1ODYwfQ.n1dpUulBypxFgkE1L_GQ-zqFGxBWPm1AZZPFVVgL6QQ",
+        "email"     : "anujbhelkar@gmail.com"
+    }
+}

@@ -6,8 +6,8 @@
  ****************************************************************************************/
 
  var jwt = require('jsonwebtoken');
+ require('dotenv').config();
  //var model = require('../app/model/userModel');
- process.env.SECRET_KEY = 'secret';
  function genver() { }
 /**
  * Here Generating Token..

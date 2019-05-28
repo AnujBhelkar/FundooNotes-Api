@@ -6,16 +6,16 @@
  *******************************************************************************************/
 
  var nodeMailer = require('nodemailer');
- exports.sendEmail = (url,email,password) => {
+ exports.sendEmail = (url,email) => {
     var transport = nodeMailer.createTransport({
         service : 'gmail',
         auth : {
-            user : email,
-            pass : password
+            user : process.env.email,
+            pass : process.env.password
         },       
     })
     const mailOption = {
-        from    : email,
+        from    : process.env.email,
         to      : email,
         subject : "Email Activation Link ",
         text    : 'Your Email Verification link is ' + url

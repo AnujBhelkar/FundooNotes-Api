@@ -11,6 +11,7 @@
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
+require('dotenv').config();
 //var cors        = require('cors')
 /**
  * Fetch all the paths from routes file 
@@ -62,3 +63,4 @@ app.listen(port,() =>{
  * 
  */
 app.use('/',routes)
+module.exports = app
