@@ -132,18 +132,18 @@ Model.prototype.verification = (req,res) => {
 
 Model.prototype.login =(req,res) =>{
     model.findOne({email : req.email},(err,result) => {
-        console.log("What is in result",result)
+        //console.log("What is in result",result)
         if(err){
             console.log("Please Enter Valid Email Address..!!",err)
+            res(err)
+        }
+        else if(result === undefined){
+            console.log("Invalid User",err)
             res(err)
         }
         else if(!result.isVerified){
           //  console.log("verify or not ",model.isVerified)
             console.log("verify First..!!");
-            res(err)
-        }
-        else if(result === undefined){
-            console.log("Invalid User",err)
             res(err)
         }
         else{

@@ -1,12 +1,32 @@
 {
-    "registration" : {
+    "registration"  : {
         "firstName" : "Anuj",
         "lastName"  : "Bhelkar",
         "email"     : "anujbhelkar@gmail.com",
         "password"  : "123456"
     },
     "emailVerification" : {
-        "token"     : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYW51amJoZWxrYXJAZ21haWwuY29tIn0sImlhdCI6MTU1OTA0OTQ2MCwiZXhwIjoxNTU5MTM1ODYwfQ.n1dpUulBypxFgkE1L_GQ-zqFGxBWPm1AZZPFVVgL6QQ",
+        "email"     : "anujbhelkar@gmail.com",
+        "token"     : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYW51amJoZWxrYXJAZ21haWwuY29tIn0sImlhdCI6MTU1OTA0OTQ2MCwiZXhwIjoxNTU5MTM1ODYwfQ.n1dpUulBypxFgkE1L_GQ-zqFGxBWPm1AZZPFVVgL6QQ"
+        
+    },
+    "login"         : {
+        "email"     : "anujbhelkar@gmail.com",
+        "password"  : "123456"
+    },
+    "verifyUser"    : {
         "email"     : "anujbhelkar@gmail.com"
-    }
+    },
+    "resetPassword" : {
+        "token"     : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiYW51amJoZWxrYXJAZ21haWwuY29tIn0sImlhdCI6MTU1OTA0OTQ2MCwiZXhwIjoxNTU5MTM1ODYwfQ.n1dpUulBypxFgkE1L_GQ-zqFGxBWPm1AZZPFVVgL6QQ",
+        "password"  : "0987654321",
+        "confirmPassword" : "0987654321"
+    },
+    "shortUrl"      : {
+        "originalUrl" : "https://www.joyent.com/node-js/production/design/errors",
+        "shortBaseUrl": "https://localhost"
+    },
+    "getOriginal"   : {
+        "code"      :  "N7sPKP6wd"
+    }         
 }
