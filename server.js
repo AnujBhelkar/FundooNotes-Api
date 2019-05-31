@@ -63,4 +63,18 @@ app.listen(port,() =>{
  * 
  */
 app.use('/',routes)
-module.exports = app
+/**
+ * here calling radis and connect with them.. 
+ */
+var redis = require('redis')
+var client = redis.createClient();
+client.on('connect',() => {
+    console.log("Connection Establish With Redis")
+})
+client.on('error',(err) => {
+    console.log("Error in redis connection",err)
+} )
+module.exports = {
+    app,
+    client
+}

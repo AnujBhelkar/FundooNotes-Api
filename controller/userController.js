@@ -6,7 +6,9 @@
  */
 
  var userServices = require('../services/userServices');
-
+ var tokens = require('../middleware/allAboutToken')
+ var redis  = require('redis')
+ var client = redis.createClient();
  exports.registration = (req,res) => {
      try{
          var responce = { }
@@ -18,9 +20,9 @@
                 res.status(400).send(err)
             }
             else{
-                responce.sucess = false,
-                responce.result = true,
-                res.status(200).send(result);
+                responce.sucess = true,
+                responce.result = result,
+                res.status(200).send(responce);
             }
         })
     }
@@ -44,9 +46,9 @@ exports.verification = (req,res) => {
                res.status(400).send(err)
            }
            else{
-               responce.sucess = false,
-               responce.result = true,
-               res.status(200).send(result);
+               responce.sucess = true,
+               responce.result = result,
+               res.status(200).send(responce);
            }
        })
    }
@@ -69,9 +71,16 @@ exports.login = (req,res) => {
                res.status(400).send(err)
            }
            else{
-               responce.sucess = false,
-               responce.result = true,
-               res.status(200).send(result);
+               const payload = {
+                   _id   : result._id,
+                   email : result.email   
+               }
+               var gentoken = tokens.generateToken(payload)
+               client.set('token',gentoken) 
+               responce.sucess = true,
+               responce.result = result,
+               responce.token  = gentoken,
+               res.status(200).send(responce);
            }
        })
    }
@@ -94,9 +103,9 @@ exports.verifyUser = (req,res) => {
                res.status(400).send(err)
            }
            else{
-               responce.sucess = false,
-               responce.result = true,
-               res.status(200).send(result);
+               responce.sucess = true,
+               responce.result = result,
+               res.status(200).send(responce);
            }
        })
    }
@@ -119,9 +128,9 @@ exports.resetPassword = (req,res) => {
                res.status(400).send(err)
            }
            else{
-               responce.sucess = false,
-               responce.result = true,
-               res.status(200).send(result);
+               responce.sucess = true,
+               responce.result = result,
+               res.status(200).send(responce);
            }
        })
    }

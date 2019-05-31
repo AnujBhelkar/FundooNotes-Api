@@ -16,6 +16,8 @@ var express = require('express');
 var userController = require('../controller/userController');
 var middle     = require('../middleware/allAboutToken');
 var shortUrlController = require('../controller/urlShortneController')
+var noteController = require('../controller/noteController')
+var upload  = require('../middleware/fileUploading')
 //var ab = require ('../app/model/urlShortne')
 /**
  * Pass Router function in a routes Variable 
@@ -29,6 +31,8 @@ routes.post('/verifyUser',userController.verifyUser)
 routes.post('/resetPassword/:token',middle.verification,userController.resetPassword);
 routes.get('/item/:code',shortUrlController.shortFromOriginal);
 routes.post('/item',shortUrlController.renderOriginal)
+routes.post('/createNote',middle.verification,noteController.createNote)
+routes.post('/upload',upload.single('image'))
 
 /**
  * Export variable for publically Accessible 
