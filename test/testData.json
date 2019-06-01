@@ -2,8 +2,8 @@
     "registration"  : {
         "firstName" : "Anuj",
         "lastName"  : "Bhelkar",
-        "email"     : "anujbhelkar@gmail.com",
-        "password"  : "123456"
+        "email"     : "anujbhelkar123@gmail.com",
+        "password"  : "1234567890"
     },
     "emailVerification" : {
         "email"     : "anujbhelkar@gmail.com",

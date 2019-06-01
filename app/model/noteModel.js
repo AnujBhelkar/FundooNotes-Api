@@ -36,8 +36,9 @@ function noteModel() { }
 */
  
 noteModel.prototype.addNote = (req,callback) => {
+    console.log('model body',req.body)
     var add = new note({
-        userId      : req.body.userId,
+        userId      : req.decoded.payload._id,
         title       : req.body.title,
         description : req.body.description
     })
@@ -58,17 +59,17 @@ noteModel.prototype.addNote = (req,callback) => {
  * @param   {* request from frontend} id 
  * @param   {* response to backend} callback
  */
-noteModel.prototype.getNote = (id,callback) => {
+noteModel.prototype.getNote = (id,callback) => { 
     note.find({
         userId  : id.decoded.payload.userId
-    },(err,res) => {
+    },(err,result) => {
         if(err) {
             console.log("Error in model for getting Notes",err)
             callback(err)
         }
         else{
-            console.log("All Notes",res)
-            callback(res)
+            console.log("All Notes",result)
+            callback(null,result)
         }    
     })
 }

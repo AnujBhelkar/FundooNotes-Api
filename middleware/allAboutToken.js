@@ -7,8 +7,8 @@
 
  var jwt = require('jsonwebtoken');
  require('dotenv').config();
- var redis = require('redis')
- var client = redis.createClient();
+//  var redis = require('redis')
+//  var client = redis.createClient();
  //var model = require('../app/model/userModel');
  function genver() { }
 /**
@@ -83,4 +83,17 @@ genver.prototype.verification = (req,res,next) => {
     }
 }
 
+genver.prototype.usingRedis = (req,res,next) => {
+    client.get('token',(err,replay) => {
+        if(err){
+            console.log(" Error in Reading Token ");
+            res(err)
+        } 
+        else{
+            console.log(`Token is ${replay}`);
+            next();
+        } 
+    })
+
+}
  module.exports = new genver();

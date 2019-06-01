@@ -76,7 +76,7 @@ exports.login = (req,res) => {
                    email : result.email   
                }
                var gentoken = tokens.generateToken(payload)
-               client.set('token',gentoken) 
+               client.set('token',gentoken,redis.print) 
                responce.sucess = true,
                responce.result = result,
                responce.token  = gentoken,

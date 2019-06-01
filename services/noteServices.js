@@ -19,15 +19,15 @@ exports.createNote =(req,res) => {
         }
     })
 }
-exports.getNote = (req,res) => {
+exports.getNote = (req,callback) => {
     noteModel.getNote(req,(err,result) => {
         if(err){
             console.log("Error in get Note Services")
-            result(err)
+            callback(err)
         }
         else{
             console.log("get Note in services");
-            result(null,res)
+            callback(null,result)
         }
     })
 }

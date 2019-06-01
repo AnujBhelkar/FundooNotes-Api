@@ -32,6 +32,7 @@ routes.post('/resetPassword/:token',middle.verification,userController.resetPass
 routes.get('/item/:code',shortUrlController.shortFromOriginal);
 routes.post('/item',shortUrlController.renderOriginal)
 routes.post('/createNote',middle.verification,noteController.createNote)
+routes.get('/getNotes',middle.usingRedis,noteController.getAllNotes)
 routes.post('/upload',upload.single('image'))
 
 /**

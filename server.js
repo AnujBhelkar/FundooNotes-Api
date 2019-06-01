@@ -12,6 +12,7 @@ var express     = require('express');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
 require('dotenv').config();
+
 //var cors        = require('cors')
 /**
  * Fetch all the paths from routes file 
@@ -47,7 +48,7 @@ mongoose.Promise = global.Promise;
 /**
  * Assign Port for listneing HTTP request
  */
-var port = process.env.PORT || 4000;
+var port = process.env.PORT;
 /**
  * app.use Allows to set up middlewares to respond to HTTP request
  */
@@ -66,7 +67,7 @@ app.use('/',routes)
 /**
  * here calling radis and connect with them.. 
  */
-var redis = require('redis')
+redis = require('redis')
 var client = redis.createClient();
 client.on('connect',() => {
     console.log("Connection Establish With Redis")
@@ -74,7 +75,4 @@ client.on('connect',() => {
 client.on('error',(err) => {
     console.log("Error in redis connection",err)
 } )
-module.exports = {
-    app,
-    client
-}
+module.exports = app
