@@ -11,6 +11,7 @@
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
+//var session = require('express-session');
 require('dotenv').config();
 
 //var cors        = require('cors')
@@ -18,6 +19,7 @@ require('dotenv').config();
  * Fetch all the paths from routes file 
  */
 var routes = require('./routes/routes')
+var githubRoutes = require('./routes/githubRoutes')
 /**
  * create aap
  */
@@ -60,15 +62,17 @@ app.listen(port,() =>{
     console.log(`${port} is listening your Request..`)
 })
 
+//app.use(session({secret : 'sshh',resave : false, saveUninitialized : true}))
 /**
  * 
  */
 app.use('/',routes)
+app.use('/',githubRoutes)
 /**
  * here calling radis and connect with them.. 
  */
 redis = require('redis')
-var client = redis.createClient();
+var client = redis.createClient(6379,'127.0.0.1');
 client.on('connect',() => {
     console.log("Connection Establish With Redis")
 })

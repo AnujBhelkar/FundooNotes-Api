@@ -60,8 +60,10 @@ noteModel.prototype.addNote = (req,callback) => {
  * @param   {* response to backend} callback
  */
 noteModel.prototype.getNote = (id,callback) => { 
+    //console.log("id is",id);
+    
     note.find({
-        userId  : id.decoded.payload.userId
+        userId  : id.decoded.payload._id
     },(err,result) => {
         if(err) {
             console.log("Error in model for getting Notes",err)

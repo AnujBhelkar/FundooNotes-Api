@@ -6,8 +6,9 @@
  */
 var noteServices = require('../services/noteServices')
 var authent      = require('../middleware/allAboutToken');
-// var redis = require('redis')
-// var client = redis.createClient()
+redis = require('redis')
+var client = redis.createClient(6379,'127.0.0.1');
+
 /**
  * @description : Here i get the request from frontend to save the notes 
  * @param {* requested from frontend } req
@@ -41,11 +42,11 @@ exports.createNote = (req,res) => {
         //    var goInside = authent.verification(token)
           //  console.log(goInside)
            //     if(goInside){
-                    var payload = {
-                        userId : result.userId
-                    }
-                    var genToken = authent.generateToken(payload)
-                    client.set('token',genToken,redis.print);
+                    // var payload = {
+                    //     userId : result.userId
+                    // }
+                    // var genToken = authent.generateToken(payload)
+                    //client.set(result.userId,genToken,redis.print);
                     // client.get('token',(err,reply) => {
                     //     if(err){
                     //         console.log("error",err)
@@ -56,7 +57,7 @@ exports.createNote = (req,res) => {
                     // })
                     responce.success = true,
                     responce.result  = result,
-                    responce.token   = genToken
+                   // responce.token   = genToken
                     res.status(400).send(responce)
                 }
                 // else{

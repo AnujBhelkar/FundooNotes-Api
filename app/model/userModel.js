@@ -13,6 +13,7 @@
  //var jwt      = require('jsonwebtoken');
  var tokenPayload = require('../../middleware/allAboutToken');
  var mail      = require('../../middleware/nodeMailer');
+ //var session = require('express-session')
  /**
   * Create Schema 
   */
@@ -148,7 +149,7 @@ Model.prototype.login =(req,res) =>{
         }
         else{
             bcrypt.compare(req.password,result.password)
-                .then(() => {
+                .then((response) => {
                     console.log("Login Successfully..",result)
                     res(null,result)
                 })

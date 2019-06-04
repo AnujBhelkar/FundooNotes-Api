@@ -7,8 +7,9 @@
 
  var jwt = require('jsonwebtoken');
  require('dotenv').config();
-//  var redis = require('redis')
-//  var client = redis.createClient();
+ redis = require('redis')
+ var client = redis.createClient(6379,'127.0.0.1');
+ //var session = require('express-session')
  //var model = require('../app/model/userModel');
  function genver() { }
 /**
@@ -84,16 +85,72 @@ genver.prototype.verification = (req,res,next) => {
 }
 
 genver.prototype.usingRedis = (req,res,next) => {
-    client.get('token',(err,replay) => {
+    //console.log((session).toString);
+    id = req.body.id;
+    client.get(id,(err,replay) => {
+       // console.log("All ABout Token",getId)     
         if(err){
             console.log(" Error in Reading Token ");
             res(err)
         } 
         else{
-            console.log(`Token is ${replay}`);
-            next();
+            if(replay){
+                jwt.verify(replay,process.env.SECRET_KEY,(err,decoded) => {
+                    if(err){
+                        console.log("Error in Verified Token");
+                        
+                        return res.send({
+                            success : false,
+                            message : "Token is not valid"
+                        })
+                    }
+                    else{
+                        req.decoded = decoded;
+                        console.log("All ABout Token",req.decoded)
+                        console.log("Token Verified successfully",replay);   
+                              
+                        next();
+                    }
+                })
+            }
+            else{
+                return res.send({
+                    success : false,
+                    message : "no Token Provided"
+                })
+            }
         } 
     })
 
 }
  module.exports = new genver();
+
+// function getId(){
+//     client.get('token',(err,replay) => {
+//         if(err){
+//             console.log(" Error in Reading Token ");
+//             return 
+//         } 
+//         else{
+//             if(replay){
+//                 jwt.verify(replay,process.env.SECRET_KEY,(err,decoded) => {
+//                     if(err){
+//                         console.log("Error in Verified Token");
+                        
+//                         return ({
+//                             success : false,
+//                             message : "Token is not valid"
+//                         })
+//                     }
+//                     else{
+//                         //req.decoded = decoded;
+//                         //console.log("All ABout Token",req.decoded)
+//                         console.log("Token Verified successfully");
+//                         return send(decoded.payload._id)               
+//                     }
+//                 })
+//             }
+//         }
+//        // return decoded.payload._id 
+//      })
+//     }

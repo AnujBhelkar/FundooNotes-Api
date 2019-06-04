@@ -31,8 +31,9 @@ routes.post('/verifyUser',userController.verifyUser)
 routes.post('/resetPassword/:token',middle.verification,userController.resetPassword);
 routes.get('/item/:code',shortUrlController.shortFromOriginal);
 routes.post('/item',shortUrlController.renderOriginal)
-routes.post('/createNote',middle.verification,noteController.createNote)
+routes.post('/createNote',middle.usingRedis,noteController.createNote)
 routes.get('/getNotes',middle.usingRedis,noteController.getAllNotes)
+routes.get('/logout',userController.logout);
 routes.post('/upload',upload.single('image'))
 
 /**

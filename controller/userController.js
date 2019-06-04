@@ -8,7 +8,7 @@
  var userServices = require('../services/userServices');
  var tokens = require('../middleware/allAboutToken')
  var redis  = require('redis')
- var client = redis.createClient();
+ var client = redis.createClient(6379,'127.0.0.1');
  exports.registration = (req,res) => {
      try{
          var responce = { }
@@ -71,12 +71,30 @@ exports.login = (req,res) => {
                res.status(400).send(err)
            }
            else{
+               session = result._id;
                const payload = {
-                   _id   : result._id,
-                   email : result.email   
+                   _id   : result._id 
                }
                var gentoken = tokens.generateToken(payload)
-               client.set('token',gentoken,redis.print) 
+               client.set('token',gentoken,redis.print)
+               client.set((result._id).toString(),gentoken,redis.print)
+               console.log((result.id).toString());
+               
+               client.get(result._id,(err,replay)=> {
+                   if(err)
+                    console.log(err)
+                    else
+                        console.log("req.session",session);
+                     //   console.log("genToken",gentoken)
+                        console.log("replay",replay)
+               }) 
+            //    client.keys('*', function (err, keys) {
+            //     if (err) return console.log(err);
+              
+            //     for(var i = 0, len = keys.length; i < len; i++) {
+            //       console.log(keys[i]);
+            //     }
+            //   });  
                responce.sucess = true,
                responce.result = result,
                responce.token  = gentoken,
@@ -138,4 +156,12 @@ exports.resetPassword = (req,res) => {
        console.log(" Controller Catch ", error);
        res.send(error);
    }
+}
+exports.logout= (req,res) => {
+    req.session.destroy((err,success) =>{
+    if(err)
+    res.status(400).send("logout Unsuccessful")
+    else
+    res.status(200).send("logout")
+    })
 }
