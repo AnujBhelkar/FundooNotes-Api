@@ -16,7 +16,8 @@ var server = require('../server');
  */
 var fs = require('fs')
 function readFile() {
-    var obj = fs.readFileSync('/home/admin1/FundooNotes/Server/test/testData.json')
+    console.log(__dirname);
+    var obj = fs.readFileSync(`${__dirname}/testData.json`)
     var data = JSON.parse(obj);
     return data;
 }

@@ -8,14 +8,12 @@
  const aws = require('aws-sdk');
  const multer = require('multer')
  const multerS3 = require('multer-s3');
- require('dotenv').config();
-
- const s3 = new aws.S3({
+let conf = {
     AccessKeyID : process.env.AccessKeyID,
     secretAccessKey : process.env.secretAccessKey,
     region      : process.env.region,
- });
- //console.log("s3",s3)
+ };
+ const s3 = new aws.S3(conf);
 /**
  * @description : filter image file by extension
  * @param {* requested from frontend } req 
@@ -32,6 +30,9 @@
      }
  }
 
+ /**
+  * @description    : Passing images to aws Bucket using multer-s3.
+  */
  var upload = multer({
      fileFilter,
      storage : multerS3({

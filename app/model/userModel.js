@@ -6,7 +6,7 @@
  ******************************************************************************************/
 
  /**
-  * Import the mongoose Library and bcrypt Package
+  *@description:  Import the mongoose Library and bcrypt Package
   */
  var mongoose = require('mongoose');
  var bcrypt   = require('bcrypt');
@@ -15,7 +15,7 @@
  var mail      = require('../../middleware/nodeMailer');
  //var session = require('express-session')
  /**
-  * Create Schema 
+  * @description : Here Creating Schema 
   */
  var Schema = new mongoose.Schema({
      firstName  : {
@@ -40,185 +40,221 @@
      }
  })
  /**
-  * Creating Model and put the data in fundoo collection
+  * @description : Creating Model and put the data in fundoo collection
   */
   var model = mongoose.model('fundoo',Schema);
  // module.exports.model1 = mongoose.model('fundoo',Schema);
   var saltRound = 10;
   function Model() { }
-
+/**
+ * @description : Here registration of user
+ */
   Model.prototype.registration = (req,res) => {
-        model.findOne({ 'email' : req.email },(err,data) => {
-            if(err){
-                console.log('Error in Registration ', err);
-                res(err)
-            }
-            else if(data != null){
-                console.log("Email Already Exists")
-                res(err)
-            }
-            else{
-                    console.log(data);
-                    var pass = req.password;
-                    req.password = bcrypt.hashSync(req.password,saltRound);
-                    var newUser = new model({
-                        "firstName"       : req.firstName,
-                        "lastName"        : req.lastName,
-                        "email"           : req.email,
-                        "password"        : req.password,
-                        "isVerified"      : 'false'
-                        
-                    });                  
-                    const payload = {
-                       email    : req.email
-                
-                    }
-                //     var token = tokenPayload.generateToken(payload)
-                //     localStorage.setItem('token','token');
-                //   console.log("New User",newUser)
-                //     newUser.save((err,result) => {
-                //         if(err){
-                //             console.log("Error In Save Registration")
-                //             res(err)
-                //         }
-                //         else{
-                //             console.log("Registration Successfully..!!")
-                //             var url = 'http://localhost:3000/'+ token ;
-                //             console.log('Url',url)
-                //             // mail.sendEmail(url,newUser.email,pass);
-                //             res(null,result);
-                //         }
-                //     }) 
+        try{
+            validator(email).isEmail();
+            model.findOne({ 'email' : req.email },(err,data) => {
+                if(err){
+                    console.log('Error in Registration ', err);
+                    res(err)
+                }
+                else if(data != null){
+                    console.log("Email Already Exists")
+                    res(err)
+                }
+                else{
+                        console.log(data);
+
+                        var pass = req.password;
+                        req.password = bcrypt.hashSync(req.password,saltRound);
+                        var newUser = new model({
+                            "firstName"       : req.firstName,
+                            "lastName"        : req.lastName,
+                            "email"           : req.email,
+                            "password"        : req.password,
+                            "isVerified"      : 'false'
+                            
+                        });                  
+                        const payload = {
+                        email    : req.email
                     
-                    newUser.save()
-                        .then((response) => {
-                            var token = tokenPayload.generateToken(payload)
-                            console.log("token",token)
-                            var url = `http://localhost:4000/verify/${token}` ;
-                            console.log('Url',url)
-                            //mail.sendEmail(url,newUser.email,pass);
-                            //localStorage.setItem('token',token)
-                            console.log("Registration Successfully..!!")
-                            res(null,response);
-                        })
-                        .catch(err => {
-                            console.log("Error In Registration", err);
-                            res(err);
-                        })
+                        }
+                    //     var token = tokenPayload.generateToken(payload)
+                    //     localStorage.setItem('token','token');
+                    //   console.log("New User",newUser)
+                    //     newUser.save((err,result) => {
+                    //         if(err){
+                    //             console.log("Error In Save Registration")
+                    //             res(err)
+                    //         }
+                    //         else{
+                    //             console.log("Registration Successfully..!!")
+                    //             var url = 'http://localhost:3000/'+ token ;
+                    //             console.log('Url',url)
+                    //             // mail.sendEmail(url,newUser.email,pass);
+                    //             res(null,result);
+                    //         }
+                    //     }) 
+                        
+                        newUser.save()
+                            .then((response) => {
+                                var token = tokenPayload.generateToken(payload)
+                                console.log("token",token)
+                                var url = `${process.env.isVerified}/${token}` ;
+                                console.log('Url',url)
+                                //mail.sendEmail(url,newUser.email,pass);
+                                //localStorage.setItem('token',token)
+                                console.log("Registration Successfully..!!")
+                                res(null,response);
+                            })
+                            .catch(err => {
+                                console.log("Error In Registration", err);
+                                res(err);
+                            })
             }
         
         })
-  }
-Model.prototype.verification = (req,res) => {
-        //return model.isVerified = true;
-        console.log("Decoded Email ",req.decoded.payload.email);
-    model.findOneAndUpdate({email : req.decoded.payload.email},
-        {"isVerified":true},
-        (err,result) => {
-        if(err) {
-            console.log("Token on decode email",err);
-            res(err)
-        }
-        else{
-          // model.isVerified = true;
-         console.log("Verify successfully", result)
-         res(null,result)
-          //return res(null,result)
-        }
-    })
+    }
+    catch(err){
+        console.log("Error in registration catch block",err);
+        res(err)
+    }
   }
   /**
-   * If user is verified then it will login otherwise not
+   * @description : vreification of user for login
    */
-
-Model.prototype.login =(req,res) =>{
-    model.findOne({email : req.email},(err,result) => {
-        //console.log("What is in result",result)
-        if(err){
-            console.log("Please Enter Valid Email Address..!!",err)
-            res(err)
-        }
-        else if(result === undefined){
-            console.log("Invalid User",err)
-            res(err)
-        }
-        else if(!result.isVerified){
-          //  console.log("verify or not ",model.isVerified)
-            console.log("verify First..!!");
-            res(err)
-        }
-        else{
-            bcrypt.compare(req.password,result.password)
-                .then((response) => {
-                    console.log("Login Successfully..",result)
-                    res(null,result)
-                })
-                .catch(err => {
-                    console.log("Password is Incorrect " , err);
-                    res(err)
-                })
-        }
-    })
-}
-/**
- *  Verify User Bye Email id
- */
-Model.prototype.verifyUser = (req,res) => {
-    model.findOne({email : req.email},(err,result) => {
-        if(err){
-            console.log("No User Found..!!")
-            res(err)
-        }
-        else{
-            var payload = {
-                _id : result._id
-            }
-            var token = tokenPayload.generateToken(payload)
-            console.log("token",token)
-            var url = `http://localhost:4000/resetPassword/${token}` ;
-            console.log('Url',url)
-            //mail.sendEmail(url,req.email);
-            console.log("User Available")
-            res(null,result)
-        }
-    })
-}
-
-/**
- * 
- */
-Model.prototype.resetPassword = (req,res) => {
-    model.findOne({_id : req.decoded.payload._id},(err,result) => {
-        if(err){
-            console.log(" Error in Authentication ")
-            res(err)
-        }
-        else{
-            console.log("pass",req.body.password,"cpass",req.body.confirmPassword)
-            if(req.body.password === req.body.confirmPassword){
-                var newPass = bcrypt.hashSync(req.body.password,saltRound);
-                model.updateOne({_id : req.decoded.payload._id},
-                        {password : newPass} ,
-                        (err,passSuccess) => {
-                            if(err){
-                                console.log("Error in Reset Password",result);
-                                  res(err)
-                            }
-                            else{
-                                console.log("Password change Successfully")
-                                  res(null,passSuccess)
-                            }
-                        })
-            }
-            else{
-                console.log("Password Must Be Same ")
+Model.prototype.verification = (req,res) => {
+    try{
+            //return model.isVerified = true;
+            console.log("Decoded Email ",req.email);
+        model.findOneAndUpdate({email : req.email},
+            {"isVerified":true},
+            (err,result) => {
+            if(err) {
+                console.log("Token on decode email",err);
                 res(err)
             }
-        }
-    })
+            else{
+            // model.isVerified = true;
+            console.log("Verify successfully", result)
+            res(null,result)
+            //return res(null,result)
+            }
+        })
+    }
+    catch(err){
+        console.log("Error in user email verification catch block");
+        res(err)
+    }
+  }
+  /**
+   * @description : If user is verified then it will login otherwise not
+   */
+Model.prototype.login =(req,res) =>{
+    try{
+        model.findOne({email : req.email},(err,result) => {
+            //console.log("What is in result",result)
+            if(err){
+                console.log("Please Enter Valid Email Address..!!",err)
+                res(err)
+            }
+            else if(result === undefined){
+                console.log("Invalid User",err)
+                res(err)
+            }
+            else if(!result.isVerified){
+            //  console.log("verify or not ",model.isVerified)
+                console.log("verify First..!!");
+                res(err)
+            }
+            else{
+                bcrypt.compare(req.password,result.password)
+                    .then((response) => {
+                        console.log("Login Successfully..",result)
+                        res(null,result)
+                    })
+                    .catch(err => {
+                        console.log("Password is Incorrect " , err);
+                        res(err)
+                    })
+            }
+        })
+    }
+    catch(err){
+        console.log("Error in login catch block",err);
+        res(err)   
+    }
+}
+/**
+ * @description : Verify User Bye Email id for forget password
+ */
+Model.prototype.verifyUser = (req,res) => {
+    try{
+        model.findOne({email : req.email},(err,result) => {
+            if(err){
+                console.log("No User Found..!!")
+                res(err)
+            }
+            else{
+                var payload = {
+                    _id : result._id
+                }
+                var token = tokenPayload.generateToken(payload)
+                console.log("token",token)
+                var url = `${process.env.resetPassword}/${token}` ;
+                console.log('Url',url)
+                //mail.sendEmail(url,req.email);
+                console.log("User Available")
+                res(null,result)
+            }
+        })
+    }
+    catch(err){
+        console.log("Error forget verifcation catch block",err);
+        res(err)
+    }
+}
+
+/**
+ * @description : here reseting Password
+ */
+Model.prototype.resetPassword = (req,res) => {
+    try{
+        model.findOne({_id : req._id},(err,result) => {
+            if(err){
+                console.log(" Error in Authentication ")
+                res(err)
+            }
+            else{
+                console.log("pass",req.password,"cpass",req.confirmPassword)
+                if(req.password === req.confirmPassword){
+                    var newPass = bcrypt.hashSync(req.password,saltRound);
+                    model.updateOne({_id : req._id},
+                            {password : newPass} ,
+                            (err,passSuccess) => {
+                                if(err){
+                                    console.log("Error in Reset Password",result);
+                                    res(err)
+                                }
+                                else{
+                                    console.log("Password change Successfully")
+                                    res(null,passSuccess)
+                                }
+                            })
+                }
+                else{
+                    console.log("Password Must Be Same ")
+                    res(err)
+                }
+            }
+        })
+    }
+    catch(err){
+        console.log("Error in reseting Password catch block",err);
+        res(err)
+    }
 }
 
  /**
- * export function for accessing method of function
+ * @description : export function for accessing method of function
  */
   module.exports = new Model()

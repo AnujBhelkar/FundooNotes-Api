@@ -7,16 +7,13 @@
 
  var jwt = require('jsonwebtoken');
  require('dotenv').config();
- redis = require('redis')
+ redis = require('redis')   
  var client = redis.createClient(6379,'127.0.0.1');
- //var session = require('express-session')
- //var model = require('../app/model/userModel');
  function genver() { }
 /**
  * Here Generating Token..
  */
  genver.prototype.generateToken=(payload) => {
-    //payload.preventDefault();
      console.log("payload",payload)
     var token = jwt.sign({payload},process.env.SECRET_KEY,{ expiresIn : '1d'})
     const obj = {
@@ -83,9 +80,13 @@ genver.prototype.verification = (req,res,next) => {
         })
     }
 }
-
+/**
+ * @description : Here verification of token and getting data through redis cache.. 
+ */
 genver.prototype.usingRedis = (req,res,next) => {
     //console.log((session).toString);
+    console.log("fdasfdas",req.body);
+    
     id = req.body.id;
     client.get(id,(err,replay) => {
        // console.log("All ABout Token",getId)     

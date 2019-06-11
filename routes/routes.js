@@ -34,7 +34,10 @@ routes.post('/item',shortUrlController.renderOriginal)
 routes.post('/createNote',middle.usingRedis,noteController.createNote)
 routes.get('/getNotes',middle.usingRedis,noteController.getAllNotes)
 routes.get('/logout',userController.logout);
-routes.post('/upload',upload.single('image'))
+routes.post('/upload', upload.single('image'))
+routes.post('/trash',middle.verification,noteController.isTrashed)
+routes.post('/archive',middle.usingRedis,noteController.isArchived)
+routes.post('/reminder',middle.usingRedis,noteController.reminder)
 
 /**
  * Export variable for publically Accessible 

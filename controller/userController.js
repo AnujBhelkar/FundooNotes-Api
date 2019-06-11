@@ -1,30 +1,45 @@
-/**
- * @Purpose     :
+/*****************************************************************************************
+ * @Purpose     : To create controller for user.
  * @file        : loginServices.js
  * @author      : Anuj
  * @since       : 23-05-2019
- */
+ ****************************************************************************************/
 
  var userServices = require('../services/userServices');
  var tokens = require('../middleware/allAboutToken')
  var redis  = require('redis')
  var client = redis.createClient(6379,'127.0.0.1');
+ /**
+  * @description    : Registration of user.
+  * @param  {* requested from frontend } req
+  * @param  {* responce to backend} res
+  */
  exports.registration = (req,res) => {
      try{
+         req.checkBody('email','Invalid Email').isEmail()
          var responce = { }
-        userServices.registration(req.body,(err,result) => {
+         var errors = req.validationErrors()
+        if(errors){
+            responce.sucess = true,
+            responce.result = result,
+            res.status(200).send(responce);
+        }
+        else{
+            userServices.registration(req.body,(err,result) => {
             
-            if(err){
-                responce.sucess = false,
-                responce.error  = err,
-                res.status(400).send(err)
-            }
-            else{
-                responce.sucess = true,
-                responce.result = result,
-                res.status(200).send(responce);
-            }
-        })
+                if(err){
+                    responce.sucess = false,
+                    responce.error  = err,
+                    res.status(400).send(responce)
+                }
+                else{
+                    responce.sucess = true,
+                    responce.result = result,
+                    res.status(200).send(responce);
+                }
+            })
+        }
+        
     }
     catch(error){
         console.log(" Controller Catch ", error);
@@ -32,7 +47,9 @@
     }
 }
 /**
- * 
+ * @description : verification of user for login.
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
  */
 exports.verification = (req,res) => {
     try{
@@ -58,7 +75,9 @@ exports.verification = (req,res) => {
    }
 }
 /**
- * 
+ * @description : Here user login
+ * @param {* requested from frontend } req
+ * @param {* responce to backend } res
  */
 exports.login = (req,res) => {
     try{
@@ -108,7 +127,9 @@ exports.login = (req,res) => {
    }
 }
 /**
- * verify User and create token
+ * @description : verify User and create token.
+ * @param {* requested from frontend } req
+ * @param {* responce to backend } res
  */
 exports.verifyUser = (req,res) => {
     try{
@@ -133,12 +154,17 @@ exports.verifyUser = (req,res) => {
    }
 }
 /**
- * Reset Password
+ * @description : Here Reseting Password
+ * @param {* requested from frontend } req
+ * @param {* responce to backend } res
  */
 exports.resetPassword = (req,res) => {
     try{
         var responce = { }
-       userServices.resetPassword(req,(err,result) => {
+        let objParam = {
+            _id :req.decoded.payload._id
+        }
+       userServices.resetPassword(objParam,(err,result) => {
            
            if(err){
                responce.sucess = false,
@@ -157,11 +183,16 @@ exports.resetPassword = (req,res) => {
        res.send(error);
    }
 }
+/**
+ * @description : Here user logout
+ * @param {* requested from frontend } req
+ * @param {* responce to backend } res
+ */
 exports.logout= (req,res) => {
     req.session.destroy((err,success) =>{
     if(err)
-    res.status(400).send("logout Unsuccessful")
+        res.status(400).send("logout Unsuccessful")
     else
-    res.status(200).send("logout")
+        res.status(200).send("logout")
     })
 }
