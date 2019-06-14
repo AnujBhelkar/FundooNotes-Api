@@ -23,9 +23,7 @@ exports.createNote = (req,res) => {
             description : req.body.description,
             reminder    : req.body.reminder,
             color       : req.body.color,
-            trash       : req.body.trash,
-            label       : req.body.label,
-            archive     : req.body.archive
+            label       : req.body.label
         }
         noteModel.addNote(data,(err,result) => {
             if(err){
@@ -39,8 +37,10 @@ exports.createNote = (req,res) => {
         })
     }
     catch(err){
-        console.log("Error Creating Note Service",err);
-        res(err)        
+        return res.status(400).send({
+            success : false,
+            message : "catch in create note services"
+      })
     }
 }
 /**
@@ -65,10 +65,152 @@ exports.getNote = (req,callback) => {
         })
     }
     catch(err){
-        console.log("Error get note Services",err);
-        callback(err)   
+        return res.status(400).send({
+            success : false,
+            message : "catch in get all notes services"
+      })
     }
 }
+
+/**
+ * @description : Here creating service for deleting Note.
+ * @param   {* requested from frontend} req
+ * @param   {* responce to backend} callback
+ */
+exports.deleteNote = (req,callback) => {
+    try{
+        var noteId = req.noteId
+        noteModel.deleteNote(noteId,(err,result) => {
+            if(err){
+                console.log("Error in delete Note Services")
+                callback(err)
+            }
+            else{
+                console.log("Delete Note services");
+                callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return res.status(400).send({
+            success : false,
+            message : "catch in delete notes services"
+      })
+    }
+}
+
+/**
+ * @description : it will send edit title data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.editTitle = (req,callback) => {
+    try{
+        var noteID = req.noteId;
+        var titleParam = req.title;
+        noteModel.editTiile(noteID,titleParam,(err,result) => {
+            if(err){
+                console.log("Error edit title");
+                callback(err)
+            }
+            else{
+                console.log("Title editted Successfully",result);
+                callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in edit title services"
+      })
+    }
+}
+
+/**
+ * @description : it will send edit description data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.editDescription = (req,callback) => {
+    try{
+        var noteID = req.noteId;    
+        var descParam = req.description;
+        noteModel.editDescription(noteID,descParam,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error in edit description");
+                return callback(err)
+            }
+            else{
+                console.log("Description editted Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in edit title services"
+      })
+    }
+}
+
+/**
+ * @description : it will send add label data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.addLabel = (req,callback) => {
+    try{
+        var labelData = {
+            userId : req.decoded.payload._id,
+            label  : req.body.label
+        }
+        noteModel.addLabel(labelData,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error adding Label");
+                return callback(err)
+            }
+            else{
+                console.log("Added label Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in add label services"
+      })
+    }
+}
+
+/**
+ * @description : it will send edit label data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.updateLabel = (req,callback) => {
+    try{
+        noteModel.updateLabel(req,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error in updating Label");
+                return callback(err)
+            }
+            else{
+                console.log("update Label Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in upadate label services"
+      })
+    }
+}
+
 /**
  * @description : it will send archieved data to model.
  * @param   {* requested from frontend } paramId

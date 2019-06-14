@@ -11,9 +11,12 @@
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
-require('express-validator');
-//app.use(validator());
+
 //var session = require('express-session');
+
+/**
+ * @description : accessing the .env files variable.
+ */
 require('dotenv').config();
 
 //var cors        = require('cors')
@@ -36,6 +39,9 @@ app.use(
     })
 )
 app.use(bodyParser.json())
+
+var validator = require('express-validator');
+app.use(validator());
 
 /**
  * @description : Get the database url for establish connection with database from config file
@@ -74,7 +80,7 @@ app.use('/',githubRoutes)
  * @description : here calling radis and connect with them.. 
  */
 redis = require('redis')
-var client = redis.createClient(6379,'127.0.0.1');
+client = redis.createClient({/** 6379,'127.0.0.1'*/});
 client.on('connect',() => {
     console.log("Connection Establish With Redis")
 })

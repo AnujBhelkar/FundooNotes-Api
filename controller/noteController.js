@@ -6,9 +6,6 @@
  ****************************************************************************************/
 var noteServices = require('../services/noteServices')
 var authent      = require('../middleware/allAboutToken');
-redis = require('redis')
-var client = redis.createClient(6379,'127.0.0.1');
-
 /**
  * @description : Here i get the request from frontend to save the notes 
  * @param {* requested from frontend } req
@@ -16,20 +13,21 @@ var client = redis.createClient(6379,'127.0.0.1');
  */
 exports.createNote = (req,res) => {
     try{
-        var response = { };
-        //var errors = req.validationErrors();
-        // if(errors){
-        //     response.success = false,
-        //     response.error   = errors,
-        //     res.status(422).send(response)
-        // } 
-        // else {
-            var responce = {};
+        req.checkBody('id',"Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+         else {
+            //var responce = {};
             noteServices.createNote(req,(err,result) => {
                 if(err){
-                    responce.success = false,
-                    responce.error   = err,
-                    res.status(400).send(responce)
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce)
                 }
                 else{
                 //     client.get('token',(err,replay)=> {
@@ -63,10 +61,10 @@ exports.createNote = (req,res) => {
                             //         console.log("result",reply)
                             //     }
                             // })
-                            responce.success = true,
-                            responce.result  = result,
+                            responce.success = true;
+                            responce.result  = result;
                         // responce.token   = genToken
-                            res.status(400).send(responce)
+                            return res.status(200).send(responce)
                         }
                         // else{
                         //     responce.success = false,
@@ -75,42 +73,254 @@ exports.createNote = (req,res) => {
                         // }
                 //}   
             })
-        //}
+        }
     }
-    catch(err){
-        console.log("Error in creating notes",err);
-        res(err)
+    catch(error){
+        console.log(" Create Note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Create Note Controller catch"
+        });
     }
 }
 
 /**
  * @description : Here i get the request from frontend for give all notes.  
  * @param {* requested from frontend } req
- * @param {* responce to backend} callback
+ * @param {* responce to backend} res
  */
 exports.getAllNotes = (req, res ) => { //callback) => {
-    try{
-        var responce = {};
-        noteServices.getNote(req,(err,result) => {
-            if(err) {
-                responce.success = false;
-                responce.error   = err;
-                return res.status(400).send(responce);
-            }
-            else{
-                responce.success = true;
-                responce.result  = result;
-                return res.status(200).send(responce);
-            }
-        })
+    try{ 
+        req.checkBody('id',"Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.getNote(req,(err,result) => {
+                if(err) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
     }
-    catch(err){
-        console.log("Error in get all notes contoller",err);
-        return res.status(400).send(err);
+    catch(error){
+        console.log(" Get Note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Get Note Controller catch"
+        });
     }
 }
+
 /**
- * @description : It handlt trash note .  
+ * @description : Here i get the request from frontend for delete note.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.deleteNote = (req,res) => {
+    try{
+        req.checkBody('noteId',"note Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.deleteNote(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("Delete note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Delete note Controller catch"
+        });
+    }
+}
+
+
+/**
+ * @description : Here i get the request from frontend for upadte title.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.editTitle = (req, res ) => { 
+    try{
+        req.checkBody('noteId',"note Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.editTitle(req.body,(err,result) => {
+                if(err) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log(" Edit Title Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Edit Title Controller catch"
+        });
+    }
+}
+
+/**
+ * @description : Here i get the request from frontend for upadte Description.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.editDescription = (req,res) => {
+    try{
+        req.checkBody('noteId',"note Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.editDescription(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log(" Edit Description Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Edit Description Controller catch"
+        });
+    }
+}
+
+/**
+ * @description : Here i get the request from frontend for adding label.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.addLabel = (req,res) => {
+    try{
+        req.checkBody('label',"label required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.addLabel(req,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log(" add label Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "add label Controller catch"
+        });
+    }
+}
+
+/**
+ * @description : Here i get the request from frontend for updating label.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.updateLabel = (req,res) => {
+    try{
+        req.checkBody('label',"label required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.updateLabel(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("update label Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "update label Controller catch"
+        });
+    }
+}
+
+/**
+ * @description : It handle trash note .  
  * @param {* requested from frontend } req
  * @param {* responce to backend} res
  */

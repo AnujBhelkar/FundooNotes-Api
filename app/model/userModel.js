@@ -17,7 +17,7 @@
  /**
   * @description : Here Creating Schema 
   */
- var Schema = new mongoose.Schema({
+ var userSchema = new mongoose.Schema({
      firstName  : {
          type       : String,
          required   : [true,'First Name Required']
@@ -42,7 +42,7 @@
  /**
   * @description : Creating Model and put the data in fundoo collection
   */
-  var model = mongoose.model('fundoo',Schema);
+  var model = mongoose.model('fundoo',userSchema);
  // module.exports.model1 = mongoose.model('fundoo',Schema);
   var saltRound = 10;
   function Model() { }
@@ -51,15 +51,14 @@
  */
   Model.prototype.registration = (req,res) => {
         try{
-            validator(email).isEmail();
             model.findOne({ 'email' : req.email },(err,data) => {
                 if(err){
                     console.log('Error in Registration ', err);
-                    res(err)
+                    return res(err)
                 }
                 else if(data != null){
                     console.log("Email Already Exists")
-                    res(err)
+                    return res(err)
                 }
                 else{
                         console.log(data);
@@ -104,11 +103,11 @@
                                 //mail.sendEmail(url,newUser.email,pass);
                                 //localStorage.setItem('token',token)
                                 console.log("Registration Successfully..!!")
-                                res(null,response);
+                                return res(null,response);
                             })
                             .catch(err => {
                                 console.log("Error In Registration", err);
-                                res(err);
+                                return res(err);
                             })
             }
         
@@ -120,7 +119,7 @@
     }
   }
   /**
-   * @description : vreification of user for login
+   * @description : conformation of user for login
    */
 Model.prototype.verification = (req,res) => {
     try{
@@ -149,33 +148,36 @@ Model.prototype.verification = (req,res) => {
   /**
    * @description : If user is verified then it will login otherwise not
    */
-Model.prototype.login =(req,res) =>{
+Model.prototype.login =(req,callback) =>{
     try{
         model.findOne({email : req.email},(err,result) => {
             //console.log("What is in result",result)
             if(err){
-                console.log("Please Enter Valid Email Address..!!",err)
-                res(err)
+                console.log("Please Enter Valid Email Address..!!")
+                callback(err)
             }
-            else if(result === undefined){
-                console.log("Invalid User",err)
-                res(err)
+            else if(result === null){
+                console.log("Invalid User")
+                return callback(err)
             }
-            else if(!result.isVerified){
+            else if(result.isVerified === null || !result.isVerified  ){
             //  console.log("verify or not ",model.isVerified)
                 console.log("verify First..!!");
-                res(err)
+                callback(err)
             }
             else{
-                bcrypt.compare(req.password,result.password)
-                    .then((response) => {
-                        console.log("Login Successfully..",result)
-                        res(null,result)
-                    })
-                    .catch(err => {
-                        console.log("Password is Incorrect " , err);
-                        res(err)
-                    })
+                
+                bcrypt.compare(req.password,result.password,(err,res)=> {
+                    if(!res){
+                        console.log("Password Incorrect");
+                        return callback(err)
+                    }
+                    else{
+                        console.log("Login Successfully");
+                        return callback(null,result)
+                    }
+                })
+                    
             }
         })
     }

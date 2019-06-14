@@ -7,8 +7,6 @@
 
  var userServices = require('../services/userServices');
  var tokens = require('../middleware/allAboutToken')
- var redis  = require('redis')
- var client = redis.createClient(6379,'127.0.0.1');
  /**
   * @description    : Registration of user.
   * @param  {* requested from frontend } req
@@ -16,18 +14,19 @@
   */
  exports.registration = (req,res) => {
      try{
-         req.checkBody('email','Invalid Email').isEmail()
+         req.checkBody('email','Invalid Email').isEmail();
+         //req.checkBody('password',"Please Enter Valid Password").isPassword();
          var responce = { }
          var errors = req.validationErrors()
         if(errors){
-            responce.sucess = true,
-            responce.result = result,
-            res.status(200).send(responce);
+            responce.sucess = false,
+            responce.result = errors,
+            res.status(400).send(responce);
         }
         else{
             userServices.registration(req.body,(err,result) => {
             
-                if(err){
+                if(err || result === undefined){
                     responce.sucess = false,
                     responce.error  = err,
                     res.status(400).send(responce)
@@ -42,8 +41,11 @@
         
     }
     catch(error){
-        console.log(" Controller Catch ", error);
-        res.send(error);
+        console.log("Registration Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Registration Controller catch"
+        });
     }
 }
 /**
@@ -70,9 +72,12 @@ exports.verification = (req,res) => {
        })
    }
    catch(error){
-       console.log(" Controller Catch ", error);
-       res.send(error);
-   }
+        console.log(" verification Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "verification Controller catch"
+        });
+    }
 }
 /**
  * @description : Here user login
@@ -84,29 +89,29 @@ exports.login = (req,res) => {
         var responce = { }
        userServices.login(req.body,(err,result) => {
            
-           if(err){
+           if(err || result === undefined){
                responce.sucess = false,
                responce.error  = err,
-               res.status(400).send(err)
+               res.status(400).send(responce)
            }
            else{
-               session = result._id;
+             //  session = result._id;
                const payload = {
                    _id   : result._id 
                }
                var gentoken = tokens.generateToken(payload)
-               client.set('token',gentoken,redis.print)
+               //client.set('token',gentoken,redis.print)
                client.set((result._id).toString(),gentoken,redis.print)
                console.log((result.id).toString());
                
-               client.get(result._id,(err,replay)=> {
-                   if(err)
-                    console.log(err)
-                    else
-                        console.log("req.session",session);
+            //    client.get(result._id,(err,replay)=> {
+            //        if(err)
+            //         console.log(err)
+            //         else
+                        //console.log("req.session",session);
                      //   console.log("genToken",gentoken)
-                        console.log("replay",replay)
-               }) 
+                        //console.log("replay",replay)
+              // }) 
             //    client.keys('*', function (err, keys) {
             //     if (err) return console.log(err);
               
@@ -122,9 +127,12 @@ exports.login = (req,res) => {
        })
    }
    catch(error){
-       console.log(" Controller Catch ", error);
-       res.send(error);
-   }
+        console.log(" Login Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Login Controller catch"
+        });
+    }
 }
 /**
  * @description : verify User and create token.
@@ -139,19 +147,22 @@ exports.verifyUser = (req,res) => {
            if(err){
                responce.sucess = false,
                responce.error  = err,
-               res.status(400).send(err)
+               res.status(400).send(responce)
            }
            else{
                responce.sucess = true,
-               responce.result = result,
+               responce.result = result, 
                res.status(200).send(responce);
            }
        })
    }
    catch(error){
-       console.log(" Controller Catch ", error);
-       res.send(error);
-   }
+        console.log(" verify user Controller Catch for forget password ");
+        res.status(400).send({
+            success : false,
+            message : "verify user Controller catch"
+        });
+    }
 }
 /**
  * @description : Here Reseting Password
@@ -161,15 +172,15 @@ exports.verifyUser = (req,res) => {
 exports.resetPassword = (req,res) => {
     try{
         var responce = { }
-        let objParam = {
-            _id :req.decoded.payload._id
-        }
-       userServices.resetPassword(objParam,(err,result) => {
+        // let objParam = {
+        //     _id :req.decoded.payload._id
+        // }
+       userServices.resetPassword(req,(err,result) => {
            
            if(err){
                responce.sucess = false,
                responce.error  = err,
-               res.status(400).send(err)
+               res.status(400).send(responce)
            }
            else{
                responce.sucess = true,
@@ -179,9 +190,12 @@ exports.resetPassword = (req,res) => {
        })
    }
    catch(error){
-       console.log(" Controller Catch ", error);
-       res.send(error);
-   }
+        console.log(" Reset Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Reset Controller catch"
+        });
+    }
 }
 /**
  * @description : Here user logout
@@ -189,10 +203,19 @@ exports.resetPassword = (req,res) => {
  * @param {* responce to backend } res
  */
 exports.logout= (req,res) => {
-    req.session.destroy((err,success) =>{
-    if(err)
-        res.status(400).send("logout Unsuccessful")
-    else
-        res.status(200).send("logout")
-    })
+    try{
+        req.session.destroy((err,success) =>{
+        if(err)
+            res.status(400).send("logout Unsuccessful")
+        else
+            res.status(200).send("logout")
+        })
+    }
+    catch(error){
+        console.log("Logout Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Logout Controller catch"
+        });
+    }    
 }

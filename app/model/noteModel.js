@@ -16,10 +16,12 @@ var noteSchema = mongoose.Schema({
        ref      : 'Note'
     },
     title       : {
-       type     : String
+       type     : String,
+       required : ['true','title required']
     },
     description  : {
-       type     : String
+       type     : String,
+       required : ['true','description required']
     },
     reminder    : {
         type    : String
@@ -28,10 +30,12 @@ var noteSchema = mongoose.Schema({
         type    : String
     },
     archive     : {
-        type    : Boolean
+        type    : Boolean,
+        default : 'false'
     },
     trash       :{
-        type    : Boolean
+        type    : Boolean,
+        default : 'false'
     },
     label       : [
         {
@@ -62,9 +66,7 @@ noteModel.prototype.addNote = (req,callback) => {
             description : req.description,
             reminder    : req.reminder,
             color       : req.color,
-            trash       : req.trash,
-            label       : req.label,
-            archive     : req.archive
+            label       : req.label
         })
         add.save((err,result) => {
             if(err){
@@ -77,10 +79,13 @@ noteModel.prototype.addNote = (req,callback) => {
             }
         })
     }
-    catch(err){
-        console.log("Error in add note catch",err);
-        callback(err)
-    }       
+    catch(error){
+        console.log(" Catch the add note Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the add note Block"
+        });
+    }     
 }
 /**
  * @description  : it will get the data from user id and find the data
@@ -103,10 +108,307 @@ noteModel.prototype.getNote = (id,callback) => {
             }    
         })
     }
-    catch(err){
-        console.log("Error in get note catch",err);
-        callback(err)
+    catch(error){
+        console.log(" Catch the get note Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the get notes Block"
+        });
     }
+}
+
+/**
+ * @description  : it will get the data from user id and delete the data
+ * @param   {* request from frontend} id 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.deleteNote = (noteId,callback) => { 
+    //console.log("id is",id);
+   try{ 
+       console.log("id is",noteId);
+       
+        note.deleteOne({
+            _id  : noteId
+        },(err,result) => {
+            if(err) {
+                console.log("Error in model for deleting Notes",err)
+                callback(err)
+            }
+            else{
+                console.log("Delete Note",result)
+                callback(null,result)
+            }    
+        })
+    }
+    catch(error){
+        console.log(" Catch the delete note Model Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the delete note Model Block"
+        });
+    }
+}
+
+/**
+ * @description  : it will edit note title
+ * @param   {* request from frontend} noteId
+ * @param   {* request from frontend} titleParam 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.editTiile = (noteId,titleParam,callback) => {
+    try{
+        note.findOneAndUpdate({
+            _id : noteId
+        },{
+            $set : {
+                title   : titleParam
+            }
+        },(err,result) => {
+
+            if(err){
+                console.log("Error in edit title model");
+                callback(err)
+            }
+            else{
+                callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log(" Catch the edit title Model Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the edit title Model Block"
+        });
+    }
+}
+ 
+/**
+ * @description  : It will edit note Description.
+ * @param   {* request from frontend} noteId
+ * @param   {* request from frontend} descParam 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.editDescription = (noteId,descParam,callback) => {
+    try{
+        note.findOneAndUpdate({
+            _id : noteId
+        },{
+            $set : {
+                description : descParam
+            }
+        },(err,result) => {
+            if(err || result === null){
+                console.log("Error in edit description model");
+                return callback(err)
+            }
+            else{
+                return callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log(" Catch the edit discription Model Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the edit discription Model Block"
+        });
+    }
+}
+
+/**
+ * @description  : It will save label in note.
+ * @param   {* request from frontend} noteId
+ * @param   {* request from frontend} labelParam 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.savelabelToNote = (noteId,labelParam,callback) => {
+    if(labelParam != null){
+        callback("Write something on label");
+    }
+    else{
+        var labelledNote = labelParam;
+        findOneAndUpdate({
+            _id : noteId
+        },{
+            $push : {
+                label   : labelParam
+            }
+        },(err,result) => {
+            if(err){
+                console.log("Error in saving label Note ");
+                callback(err)
+            }
+            else{
+                console.log("Saved label Model ");
+                var res = result.label;
+                res.push(labelledNote)
+                return callback(res)
+            }
+        })   
+    }
+}
+
+/**
+ * @description  : It will delete label in note.
+ * @param   {* request from frontend} noteId
+ * @param   {* request from frontend} labelParam 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.deletelabelToNote = (noteId,labelParam,callback) => {
+    if(labelParam != null){
+        callback("Write something on label");
+    }
+    else{
+        var labelledNote = labelParam;
+        deleteOne({
+            _id : noteId
+        },{
+            $pull : {
+                label   : labelParam
+            }
+        },(err,result) => {
+            if(err){
+                console.log("Error in saving label Note ");
+                callback(err)
+            }
+            else{
+                console.log("Delete label Model ");
+                var newArray = result.label;
+                for(var i = 0; i < newArray.length; i++){
+                    if(newArray[i] === labelledNote){
+                        newArray.splice(i,1)
+                        return callback(null,newArray)
+                    }
+                }
+                
+            }
+        })   
+    }
+}
+
+/**
+ * @description : Here creating schema for label
+ */
+
+ var labelSchema = mongoose.Schema({
+    userId : {
+        type : Schema.Types.ObjectId,
+        ref : 'userSchema'
+    }, 
+    label : {
+        type : String,
+        require : [true,'label required'],
+
+     }
+ },{
+     timestamps : true 
+ })
+var label = mongoose.model('Label',labelSchema)
+
+/**
+ * @description : it will add the label
+ * @param   {* requested from frontend } labelData
+ * @param   {* responce to backend } callback
+ */
+
+noteModel.prototype.addLabel = (labelData,callback) => {
+    try{
+        const data = new label(labelData)
+        data.save((err,result) => {
+            if(err){
+                console.log("error in add label model");
+                return callback(err)
+            }
+            else{
+                console.log("label add successfully..",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log(" Catch the add label Model Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the add label Model Block"
+        });
+    }        
+}
+
+/**
+ * @description : it will update the label
+ * @param   {* requested from frontend } labelparam
+ * @param   {* responce to backend } callback
+ */
+
+noteModel.prototype.updateLabel = (labelParam,callback) => {
+    var editLabel = null;
+    var labelID =null;
+    if( labelParam != null){
+        editLabel = labelParam.label;
+        labelID = labelParam.labelId
+    }
+    else{
+        callback("Please write something on label")
+    }
+    label.findByIdAndUpdate({
+        _id : labelID 
+    },{
+        $set : {
+            label : editLabel
+        }
+    },(err,result) => {
+        if(err){
+            console.log("Error in update label model");
+            callback(err) 
+        }
+        else{
+            console.log("Successfully updated label",result);
+            callback(null,result)
+        }
+    })
+
+}
+
+/**
+ * @description : it will delete the label
+ * @param   {* requested from frontend } labelId
+ * @param   {* responce to backend } callback
+ */
+noteModel.prototype.deleteLabel = (labelID,callback) => {
+    label.deleteOne({
+         _id :labelID
+    },(err,result) => {
+        if(err){
+            console.log("Error in label Model");
+            callback(err)
+        }
+        else{
+            console.log("Label deleted succesfully");
+            callback(null,result)
+        }
+    })
+}
+
+
+/**
+ * @description : it will get all label of note
+ * @param   {* requested from frontend } labelId
+ * @param   {* responce to backend } callback
+ */
+noteModel.prototype.getAllLabel = (labelID,callback) => {
+    label.find({
+         _id :labelID
+    },(err,result) => {
+        if(err){
+            console.log("Error in  get all label Model");
+            callback(err)
+        }
+        else{
+            console.log("all Label succesfully",result);
+            callback(null,result)
+        }
+    })
 }
 
 /**

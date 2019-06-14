@@ -14,13 +14,13 @@
  exports.registration = (req,res) => {
     try{
         userModel.registration(req,(err,result) => {
-            if(err){
-                console.log("Service Error" , err)
-                res(err);
+            if(err || result === undefined){
+                console.log("Service Error" )
+                return res(err);
             }
             else{
                 console.log("Service In ")
-                res(null,result)
+                return res(null,result)
             }
         })
     }
@@ -41,17 +41,17 @@
         }
         userModel.verification(data,(err,result) => {
             if(err){
-                console.log("Service Error" , err)
-                res(err);
+                console.log("Service Error" )
+                return res(err);
             }
             else{
                 console.log("Service In ")
-                res(null,result)
+                return res(null,result)
             }
         })
     }
     catch(err){
-        console.log("Catch Error In services ",err)
+        console.log("Catch Error In services ")
         res(err)
     }
  }
@@ -63,13 +63,13 @@
  exports.login = (req,res) => {
     try{
         userModel.login(req,(err,result) => {
-            if(err){
-                console.log("Service Error" , err)
-                res(err);
+            if(err || result === undefined){
+                console.log("Service Error")
+                return res(err);
             }
             else{
-                console.log("Service In ")
-                res(null,result)
+                console.log("Service In ",result)
+                return res(null,result)
             }
         })
     }
@@ -111,7 +111,7 @@
         var data ={
             _id : req.decoded.payload._id,
             password : req.body.password,
-            confirmPassword : req.confirmPassword
+            confirmPassword : req.body.confirmPassword
         }
         userModel.resetPassword(data,(err,result) => {
             if(err){

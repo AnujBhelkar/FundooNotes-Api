@@ -1,5 +1,5 @@
 /**
- * @Purpose    :
+ * @Purpose    : Here github Authentication
  * @file       : githubRoutes.js
  * @author     : Anuj
  * @since      : 02-06-2019

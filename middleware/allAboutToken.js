@@ -6,12 +6,9 @@
  ****************************************************************************************/
 
  var jwt = require('jsonwebtoken');
- require('dotenv').config();
- redis = require('redis')   
- var client = redis.createClient(6379,'127.0.0.1');
  function genver() { }
 /**
- * Here Generating Token..
+ * @description : Here Generating Token..
  */
  genver.prototype.generateToken=(payload) => {
      console.log("payload",payload)
@@ -24,7 +21,7 @@
     return token;
  }
 /**
- * Here verify Token
+ * @description : Here verify Token
  */
 //  genver.prototype.verifyToken = (req,res) => {
 //      model.model.findOne({temporaryToken : req.params.token},(err, result) => {
@@ -85,7 +82,7 @@ genver.prototype.verification = (req,res,next) => {
  */
 genver.prototype.usingRedis = (req,res,next) => {
     //console.log((session).toString);
-    console.log("fdasfdas",req.body);
+    //console.log("fdasfdas",req.body);
     
     id = req.body.id;
     client.get(id,(err,replay) => {
@@ -102,7 +99,7 @@ genver.prototype.usingRedis = (req,res,next) => {
                         
                         return res.send({
                             success : false,
-                            message : "Token is not valid"
+                            message : "Error in Verified Token"
                         })
                     }
                     else{
