@@ -92,7 +92,7 @@ urlShortne1.prototype.renderOriginal =(req,res) => {
                         //    res.status(200).json(item)
                         // }
                         // else{
-                            shortUrl = shortBaseUrl + "/" + urlCode;
+                            const shortUrl = shortBaseUrl + "/" + urlCode;
                             const item1 = new shortUrlSchema ({
                                 originalUrl,
                                 shortUrl,

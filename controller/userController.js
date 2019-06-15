@@ -7,6 +7,7 @@
 
  var userServices = require('../services/userServices');
  var tokens = require('../middleware/allAboutToken')
+ var upload = require('../services/fileUploadingServices')
  /**
   * @description    : Registration of user.
   * @param  {* requested from frontend } req
@@ -197,6 +198,39 @@ exports.resetPassword = (req,res) => {
         });
     }
 }
+
+/**
+ * @description : Here file uploading data pass to service
+ * @param {* requested from frontend } req
+ * @param {* responce to backend } res
+ */
+exports.uploadFile= (req,res) => {
+    try{
+        var responce = { };
+        const singleUpload = upload.single('image')
+        singleUpload(req,res,(err,result) => {
+            if(err){
+                responce.sucess = false,
+                responce.error  = err,
+                res.status(400).send(responce)
+            }
+            else{
+                responce.sucess = true,
+                responce.result = req.file.location,
+                res.status(200).send(responce);
+            }
+        })
+    }
+    catch(error){
+        console.log("file upload Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "file upload Controller catch"
+        });
+    }    
+}
+
+
 /**
  * @description : Here user logout
  * @param {* requested from frontend } req

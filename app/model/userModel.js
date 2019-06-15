@@ -63,7 +63,7 @@
                 else{
                         console.log(data);
 
-                        var pass = req.password;
+                       // var pass = req.password;
                         req.password = bcrypt.hashSync(req.password,saltRound);
                         var newUser = new model({
                             "firstName"       : req.firstName,

@@ -13,11 +13,11 @@
  genver.prototype.generateToken=(payload) => {
      console.log("payload",payload)
     var token = jwt.sign({payload},process.env.SECRET_KEY,{ expiresIn : '1d'})
-    const obj = {
-        success : true,
-        message : 'Token Generated',
-        token   : token
-    }
+    // const obj = {
+    //     success : true,
+    //     message : 'Token Generated',
+    //     token   : token
+    // }
     return token;
  }
 /**
@@ -84,7 +84,7 @@ genver.prototype.usingRedis = (req,res,next) => {
     //console.log((session).toString);
     //console.log("fdasfdas",req.body);
     
-    id = req.body.id;
+    const id = req.body.id;
     client.get(id,(err,replay) => {
        // console.log("All ABout Token",getId)     
         if(err){

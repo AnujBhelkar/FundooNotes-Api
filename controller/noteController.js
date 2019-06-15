@@ -320,6 +320,164 @@ exports.updateLabel = (req,res) => {
 }
 
 /**
+ * @description : Here i get the request from frontend for deleting label.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.deleteLabel = (req,res) => {
+    try{
+        req.checkBody('labelId',"label id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.deleteLabel(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("delete label Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "delete label Controller catch"
+        });
+    }
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
+/**
+ * @description : Here i get the request from frontend for get all label.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.getAllLabel = (req,res) => {
+    try{
+        //req.checkBody('labelId',"label id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.getAllLabel(req,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("get all label Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "get all label Controller catch"
+        });
+    }
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
+/**
+ * @description : Here i get the request from frontend for save label to note.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.savelabelToNote = (req,res) => {
+    try{
+        req.checkBody('noteId',"note id required").not().isEmpty();
+        // req.checkBody('labelId',"label id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.savelabelToNote(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("save label to note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "save label to note Controller catch"
+        });
+    }
+}          
+
+/**
+ * @description : Here i get the request from frontend for delete label from note.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.deletelabelToNote = (req,res) => {
+    try{
+        req.checkBody('noteId',"note id required").not().isEmpty();
+        req.checkBody('label',"label required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.deletelabelToNote(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("delete label to note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "delete label to note Controller catch"
+        });
+    }
+}          
+
+/**
  * @description : It handle trash note .  
  * @param {* requested from frontend } req
  * @param {* responce to backend} res
@@ -336,7 +494,7 @@ exports.isTrashed = (req,res) => {
         } 
         else{
             var responseResult = { }
-            noteId = req.body.noteId;
+            var noteId = req.body.noteId;
 
             noteServices.isTrashed(noteId,(err,result) => {
                 if(err){
@@ -377,8 +535,8 @@ exports.isArchived = (req,res) => {
         // else{
             var responseResult = { }
             
-            noteId = req.body.noteId;
-            archive = req.body.archive;
+            var noteId = req.body.noteId;
+            var archive = req.body.archive;
             console.log("dsgds",noteId,archive);
             
             noteServices.isArchived(noteId,archive,(err,result) => {
@@ -418,8 +576,8 @@ exports.reminder = (req,res) => {
         } 
         else{
             var responseResult = { }
-            noteId = req.body.noteId;
-            reminder = req.body.reminder;
+            var noteId = req.body.noteId;
+            var reminder = req.body.reminder;
             noteServices.reminder(noteId,reminder,(err,result) => {
                 if(err){
                     responseResult.status = false

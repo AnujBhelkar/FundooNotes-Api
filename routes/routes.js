@@ -17,7 +17,6 @@ var userController = require('../controller/userController');
 var middle     = require('../middleware/allAboutToken');
 var shortUrlController = require('../controller/urlShortneController')
 var noteController = require('../controller/noteController')
-var upload  = require('../middleware/fileUploading')
 //var ab = require ('../app/model/urlShortne')
 /**
  *@description : Pass Router function in a routes Variable 
@@ -38,13 +37,17 @@ routes.post('/editDescription',middle.usingRedis,noteController.editDescription)
 routes.post('/editDescription',middle.usingRedis,noteController.editDescription)
 routes.post('/addLabel',middle.usingRedis,noteController.addLabel)
 routes.post('/updateLabel',middle.usingRedis,noteController.updateLabel)
+routes.post('/deleteLabel',middle.usingRedis,noteController.deleteLabel)
+routes.get('/getAllLabel',middle.usingRedis,noteController.getAllLabel)
 routes.get('/logout',userController.logout);
-routes.post('/upload', upload.single('image'))
+routes.post('/upload',userController.uploadFile)
 routes.post('/trash',middle.verification,noteController.isTrashed)
 routes.post('/archive',middle.usingRedis,noteController.isArchived)
 routes.post('/reminder',middle.usingRedis,noteController.reminder)
 routes.post('/editTitle',middle.usingRedis,noteController.editTitle)
 routes.post('/editDescription',middle.usingRedis,noteController.editDescription)
+routes.post('/saveLabelToNote',middle.usingRedis,noteController.savelabelToNote)
+routes.post('/deleteLabelToNote',middle.usingRedis,noteController.deletelabelToNote)
 
 
 

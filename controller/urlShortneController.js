@@ -13,6 +13,7 @@ var urlShortneController = require('../services/urlShortneServices');
  */
  exports.shortFromOriginal = (req,res) => {
      try{
+        //console.log(req)
          var responce = { }
          urlShortneController.shortFromOriginal(req,(err,result) => {
             

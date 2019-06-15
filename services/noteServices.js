@@ -212,6 +212,115 @@ exports.updateLabel = (req,callback) => {
 }
 
 /**
+ * @description : it will send delete label data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.deleteLabel = (req,callback) => {
+    try{
+        var labelId = req.labelId;
+        noteModel.deleteLabel(labelId,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error in deleting Label");
+                return callback(err)
+            }
+            else{
+                console.log("Delete Label Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in delete label services"
+      })
+    }
+}
+/**
+ * @description : it will send get all label data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.getAllLabel = (req,callback) => {
+    try{
+        var noteId = req.decoded.payload._id;
+        noteModel.getAllLabel(noteId,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error in getting all Label");
+                return callback(err)
+            }
+            else{
+                console.log("Get All Label Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in get all label services"
+      })
+    }
+}
+
+/**
+ * @description : it will add label note data pass to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.savelabelToNote = (req,callback) => {
+    try{
+        var noteId = req.noteId;
+        var labelParam = req.label;
+        noteModel.savelabelToNote(noteId,labelParam,(err,result) => {
+            if(err){
+                console.log("Error in saving label to note");
+                return callback(err)
+            }
+            else{
+                console.log("Saved label to note Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch saving label to note Model"
+      })
+    }
+}
+/**
+ * @description : it will delete label note data pass to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.deletelabelToNote = (req,callback) => {
+    try{
+        var noteId = req.noteId;
+        var labelParam = req.label;
+        noteModel.deletelabelToNote(noteId,labelParam,(err,result) => {
+            if(err){
+                console.log("Error in deleting label to note");
+                return callback(err)
+            }
+            else{
+                console.log("delete label from note Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch delete label to note Model"
+      })
+    }
+}
+
+
+/**
  * @description : it will send archieved data to model.
  * @param   {* requested from frontend } paramId
  * @param   {* requested from frontend } paramData 
@@ -257,10 +366,10 @@ exports.isTrashed = (paramId,callback) => {
                 })
             }
             else if(status === false){
-                var data = {
+                var statusData = {
                     status : true
                 }
-                noteModel.isTrashed(paramId,data,(err,result) => {
+                noteModel.isTrashed(paramId,statusData,(err,result) => {
                     if(err){
                         console.log("Error in Trashed service");
                         callback(err)
