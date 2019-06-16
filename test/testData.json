@@ -28,5 +28,61 @@
     },
     "getOriginal"   : {
         "code"      :  "N7sPKP6wd"
+    },
+    "createNote"    : {
+        "id"        : "5ced34f489c0873f1a50af18",
+        "title"     : "Work Hard",
+        "description" : "How are you",
+        "color"     : "green",
+        "label"	    : "Wake up ??"
+    },
+    "getNotes"      : {
+        "id"        : "5ced34f489c0873f1a50af18"
+    },
+    "deleteNote"    : {
+        "id"        : "5ced34f489c0873f1a50af18",
+        "noteId"    : "5cf210805eb21833d33c44e0"
+    },
+    "editTitle"     : {
+        "id"        : "5ced34f489c0873f1a50af18",
+        "noteId"    : "5d06080bb0d4db36bbe98436",
+        "title"     : "Work Hard Important"
+
+    },
+    "editDescription" : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "noteId"      : "5d06080bb0d4db36bbe98436",
+        "description" : "Work"
+    },
+    "addLabel"        : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "label"       : "Wc 2019"
+    },
+    "updateLabel"        : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "labelId"     : "5d0612194de2d644025f65a6",
+        "label"       : "Wc 2019 win by India"
+    },
+    "deleteLabel"        : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "labelId"     : "5d0612194de2d644025f65a6"
+    },
+    "getAllLabel"     : {
+        "id"          : "5ced34f489c0873f1a50af18"
+    },
+    "saveLabelToNote"     : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "noteId"      : "5cf210a037208634232e9977",
+		"label"       : "Heep Heep Hurrhe..1"
+    },
+    "deleteLabelToNote"     : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "noteId"      : "5cf210a037208634232e9977",
+		"label"       : "Heep Heep Hurrhe.."
+    },
+    "isArchive"       : {
+        "id"          : "5ced34f489c0873f1a50af18",
+        "noteId"      : "5cf210a037208634232e9977",
+        "archive"     : "true"
     }         
 }
