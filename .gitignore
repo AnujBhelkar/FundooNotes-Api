@@ -3,3 +3,5 @@
 docker-compose
 sonar-project.properties
 coverage
+.nyc_output
+.scannerwork
