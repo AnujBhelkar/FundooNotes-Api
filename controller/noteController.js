@@ -523,16 +523,16 @@ exports.isTrashed = (req,res) => {
  */
 exports.isArchived = (req,res) => {
     try{
-        // req.checkbody('noteId','noteId required ').not().isEmpty();
-        // req.checkbody('archive','archive required ').not().isEmpty();
-        // var response = { };
-        // var errors = req.validationErrors();
-        // if(errors){
-        //     response.status = false
-        //     response.error  = error
-        //     res.status(422).send(response)
-        // } 
-        // else{
+        req.checkBody('noteId','noteId required ').not().isEmpty();
+        req.checkBody('archive','archive required ').not().isEmpty();
+        var response = { };
+        var errors = req.validationErrors();
+        if(errors){
+            response.status = false
+            response.error  = error
+            res.status(422).send(response)
+        } 
+        else{
             var responseResult = { }
             
             var noteId = req.body.noteId;
@@ -551,7 +551,7 @@ exports.isArchived = (req,res) => {
                     res.status(200).send(responseResult)
                 }
             })
-        //}
+        }
     }
     catch(err){
         console.log("Error catch in archived ");
@@ -566,16 +566,15 @@ exports.isArchived = (req,res) => {
  */
 exports.reminder = (req,res) => {
     try{
-        req.checkbody('noteId','noteId required').not().isEmpty();
-        var response = { };
+        req.checkBody('noteId','noteId required').not().isEmpty();
         var errors = req.validationErrors();
         if(errors){
             response.status = false
             response.error  = error
             res.status(422).send(response)
         } 
-        else{
-            var responseResult = { }
+        else{console.log("hjds");
+            var responseResult = {}
             var noteId = req.body.noteId;
             var reminder = req.body.reminder;
             noteServices.reminder(noteId,reminder,(err,result) => {
@@ -592,8 +591,11 @@ exports.reminder = (req,res) => {
             })
         }
     }
-    catch(err){
-        console.log("Error catch in archived ");
-        res.send(err)
+    catch(error){
+        console.log(" Reminder Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "Reminder Controller catch"
+        });
     }
 }

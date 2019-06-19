@@ -50,11 +50,25 @@ var dbUrl = require('../Server/config/config').url;
 /**
  * @description : connection of Database
  */
+const pipeline = [
+    {
+        $project : { documentKey : false }
+    }
+]
 mongoose.Promise = global.Promise;
- mongoose
-    .connect(dbUrl,{ useNewUrlParser : true})
-    .then(() => console.log("Database Connected"))
-    .catch(err => console.log(`Error In Establishing Connection ${err}`))
+ var db = mongoose
+            .connect(dbUrl,{ useNewUrlParser : true})
+            .then((cl) => {
+                console.log("Database Connected")
+                // const db = cl.db('notes')
+                // const collection = db.collection('users')
+                // const changeStream = collection.watch(pipeline)
+                // changeStream.on("change",function(change) {
+                //     console.log("ghashjg",change);
+                    
+                //})
+            })
+            .catch(err => console.log(`Error In Establishing Connection ${err}`))
 /**
  * @description : Assign Port for listneing HTTP request
  */
@@ -87,4 +101,16 @@ client.on('connect',() => {
 client.on('error',(err) => {
     console.log("Error in redis connection",err)
 } )
+
+// /**
+//  * @description :  watching mongodb Database
+//  */
+//     const collection = db.collection('notes')
+//     const taskCollection = db.collection('notes');
+//     const changeStream = taskCollection.watch();
+
+//   changeStream.on('change', (change) => {
+
+//   });
+
 module.exports = app

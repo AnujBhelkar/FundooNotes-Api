@@ -27,19 +27,19 @@ describe('status and content',() => {
     /**
      * @description : It will create for testing Registration Api.
      */
-        it('Registration',(done) => {
-            chai.request(server).post('/register').send(data.registration).end((err,res) =>{
-                if(err){
-                    console.log("expect ==>",err)
-                    err.should.have.status(400);
-                }
-                else{
-                    console.log('expect Body ==>',res.body)
-                    res.should.have.status(200);
-                }
-                done();
-            })
-        })    
+        // it('Registration',(done) => {
+        //     chai.request(server).post('/register').send(data.registration).end((err,res) =>{
+        //         if(err){
+        //             console.log("expect ==>",err)
+        //             err.should.have.status(400);
+        //         }
+        //         else{
+        //             console.log('expect Body ==>',res.body)
+        //             res.should.have.status(200);
+        //         }
+        //         done();
+        //     })
+        // })    
     /**
      * @description : It will create for testing Confirmation Api.
      */            
@@ -315,8 +315,24 @@ describe('status and content',() => {
     /**
      * @description : It will create for testing delet Label to Note Api.
      */ 
-    it("delete Label from Note",(done) => {
-        chai.request(server).post('/deleteLabelToNote').send(data.deleteLabelToNote).end((err,res) => {
+    // it("delete Label from Note",(done) => {
+    //     chai.request(server).post('/deleteLabelToNote').send(data.deleteLabelToNote).end((err,res) => {
+    //         if(err){
+    //             console.log("Expected Body ==> ",err);
+    //             err.should.have.status(400)                    
+    //         }
+    //         else{
+    //             console.log("Expected Body ==> ",res.body);
+    //             res.should.have.status(200)                    
+    //         }
+    //         done();
+    //     })
+    // })
+    /**
+     * @description : It will create for testing archive Api.
+     */ 
+    it("archive",(done) => {
+        chai.request(server).post('/archive').send(data.isArchive).end((err,res) => {
             if(err){
                 console.log("Expected Body ==> ",err);
                 err.should.have.status(400)                    
@@ -329,10 +345,10 @@ describe('status and content',() => {
         })
     })
     /**
-     * @description : It will create for testing archive Api.
+     * @description : It will create for testing reminder Api.
      */ 
-    it("archive",(done) => {
-        chai.request(server).post('/archive').send(data.isArchive).end((err,res) => {
+    it("Reminder",(done) => {
+        chai.request(server).post('/reminder').send(data.reminder).end((err,res) => {
             if(err){
                 console.log("Expected Body ==> ",err);
                 err.should.have.status(400)                    

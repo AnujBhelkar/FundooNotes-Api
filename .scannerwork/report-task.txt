@@ -1,6 +1,6 @@
-projectKey=my:project
+projectKey=Fundoo-Notes
 serverUrl=http://localhost:9000
 serverVersion=6.7.1.35068
-dashboardUrl=http://localhost:9000/dashboard/index/my:project
-ceTaskId=AWtanMAhwiXXpDl3DwAS
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AWtanMAhwiXXpDl3DwAS
+dashboardUrl=http://localhost:9000/dashboard/index/Fundoo-Notes
+ceTaskId=AWtv65ISVoJ8pGSbV6aI
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWtv65ISVoJ8pGSbV6aI

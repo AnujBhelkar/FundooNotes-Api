@@ -13,7 +13,7 @@ var noteSchema = mongoose.Schema({
     userId      : {
        type     : Schema.Types.ObjectId,
        required : [true, 'User Id Required'],
-       ref      : 'Note'
+       ref      : 'userSchema'
     },
     title       : {
        type     : String,
@@ -70,6 +70,7 @@ noteModel.prototype.addNote = (req,callback) => {
         })
         add.save((err,result) => {
             if(err){
+                client.set(result.id + data, result);
                 console.log("Error in Saving Data",err)
                 callback(err)
             }
@@ -581,7 +582,7 @@ noteModel.prototype.reminder = (noteId,reminderParams,callback) => {
         }
         else{
             console.log("reminder",result);
-            callback(result)
+            callback(null,result)
         }
     })
 }
