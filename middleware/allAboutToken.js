@@ -82,7 +82,7 @@ genver.prototype.verification = (req,res,next) => {
  */
 genver.prototype.usingRedis = (req,res,next) => {
     //console.log((session).toString);
-    //console.log("fdasfdas",req.body);
+    console.log("fdasfdas",req.body);
     
     const id = req.body.id;
     client.get(id,(err,replay) => {

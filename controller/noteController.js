@@ -5,7 +5,8 @@
  * @since       : 30-05-2019
  ****************************************************************************************/
 var noteServices = require('../services/noteServices')
-var authent      = require('../middleware/allAboutToken');
+//var authent      = require('../middleware/allAboutToken');
+var notification = require('../app/model/notificationModel') 
 /**
  * @description : Here i get the request from frontend to save the notes 
  * @param {* requested from frontend } req
@@ -597,5 +598,205 @@ exports.reminder = (req,res) => {
             success : false,
             message : "Reminder Controller catch"
         });
+    }
+}
+
+/**
+ * @description : It handle the send push notification .  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.pushNotification = (req,res) => {
+    try{
+        req.checkBody('noteId','noteId required').not().isEmpty();
+        var errors = req.validationErrors();
+        if(errors){
+            response.status = false
+            response.error  = error
+            res.status(422).send(response)
+        } 
+        else{
+            var responseResult = {}
+            var noteId = req.body.noteId;
+            notification.sendPushNotification(noteId,(err,result) => {
+                if(err){
+                    responseResult.status = false
+                    responseResult.error = err
+                    res.status(400).send(responseResult)
+                }
+                else{
+                    responseResult.status = true
+                    responseResult.result = result
+                    res.status(200).send(responseResult)
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log(" Push Notification Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : " Push Notification Controller catch"
+        });
+    }
+}
+
+/**
+ * @description : It handle the update push notification .  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.sendPushNotification= (req,res) => {
+    try{
+        req.checkBody('noteId','noteId required').not().isEmpty();
+        var errors = req.validationErrors();
+        if(errors){
+            response.status = false
+            response.error  = error
+            res.status(422).send(response)
+        } 
+        else{
+            var responseResult = {}
+            var noteId = req.body.noteId;
+            notification.sendPushNotification(noteId,(err,result) => {
+                if(err){
+                    responseResult.status = false
+                    responseResult.error = err
+                    res.status(400).send(responseResult)
+                }
+                else{
+                    responseResult.status = true
+                    responseResult.result = result
+                    res.status(200).send(responseResult)
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("update Push Notification Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : " Update Push Notification Controller catch"
+        });
+    }
+}
+
+exports.saveCollaborator = (req,res) => {
+    try{
+        req.checkBody('id','user id required').not().isEmpty()
+        req.checkBody('noteId','Note id required').not().isEmpty()
+        req.checkBody('collabId','collabortor id required').not().isEmpty()
+        var errors = req.validationErrors();
+        var response = {}
+        if(errors){
+            response.success = false
+            response.error   = errors
+            res.status(400).send(response)
+        }
+        else{
+            const collabData = {
+                userId : req.decoded.payload._id,
+                noteId : req.body.noteId,
+                collabId : req.body.collabId
+            }
+            console.log(collabData);
+            
+            noteServices.saveCollaborator(collabData,(err,result) => {
+                if(err){
+                    response.success = false
+                    response.error   = err
+                    res.status(400).send(response)
+                }
+                else{
+                    response.success = true
+                    response.error   = result
+                    res.status(200).send(response)
+                }
+            })
+        }
+    }
+    catch(err) {
+        res.status(400).send('catch save collaborator')
+    }
+}
+
+exports.get= (req,res) => {
+    try{
+        // req.checkBody('id','user id required').not().isEmpty()
+        // req.checkBody('noteId','Note id required').not().isEmpty()
+        // req.checkBody('collabId','collabortor id required').not().isEmpty()
+        // var errors = req.validationErrors();
+        // var response = {}
+        // if(errors){
+        //     response.success = false
+        //     response.error   = errors
+        //     res.status(400).send(response)
+        // }
+        // else{
+            // const collabData = {
+            //     userId : req.decoded.payload._id,
+            //     noteId : req.body.noteId,
+            //     collabId : req.body.collabId
+            // }
+            // console.log(collabData);
+            var response = { }
+            var id = req.body.id;
+            noteServices.get(id,(err,result) => {
+                if(err){
+                    response.success = false
+                    response.error   = err
+                    res.status(400).send(response)
+                }
+                else{
+                    response.success = true
+                    response.error   = result
+                    res.status(200).send(response)
+                }
+            })
+        //}
+    }
+    catch(err) {
+        res.status(400).send('catch save collaborator')
+    }
+}
+
+
+exports.collabGet = (req,res) => {
+    try{
+        // req.checkBody('id','user id required').not().isEmpty()
+        // req.checkBody('noteId','Note id required').not().isEmpty()
+        // req.checkBody('collabId','collabortor id required').not().isEmpty()
+        // var errors = req.validationErrors();
+        // var response = {}
+        // if(errors){
+        //     response.success = false
+        //     response.error   = errors
+        //     res.status(400).send(response)
+        // }
+        // else{
+            // const collabData = {
+            //     userId : req.decoded.payload._id,
+            //     noteId : req.body.noteId,
+            //     collabId : req.body.collabId
+            // }
+            // console.log(collabData);
+            var response = { }
+            var id = req.body.id;
+            noteServices.collabGet(id,(err,result) => {
+                if(err){
+                    response.success = false
+                    response.error   = err
+                    res.status(400).send(response)
+                }
+                else{
+                    response.success = true
+                    response.result   = result
+                    res.status(200).send(response)
+                }
+            })
+        //}
+    }
+    catch(err) {
+        res.status(400).send('catch save collaborator')
     }
 }

@@ -1,5 +1,5 @@
 /**************************************************************************************
- * @Purpose     :
+ * @Purpose     : create Model for storing Note data in database
  * @file        : noteModel.js
  * @author      : Anuj
  * @since       : 30-05-2019
@@ -33,10 +33,14 @@ var noteSchema = mongoose.Schema({
         type    : Boolean,
         default : 'false'
     },
-    trash       :{
+    trash       : {
         type    : Boolean,
         default : 'false'
-    },
+    },  
+    collab      : {
+            type : String,
+            ref  : 'collabSchema'
+    },      
     label       : [
         {
             type : String,
@@ -97,14 +101,14 @@ noteModel.prototype.getNote = (id,callback) => {
     //console.log("id is",id);
    try{ 
         note.find({
-            userId  : id.userId
+            userId  : id
         },(err,result) => {
             if(err) {
                 console.log("Error in model for getting Notes",err)
                 callback(err)
             }
             else{
-                console.log("All Notes",result)
+               // console.log("All Notes",result)
                 callback(null,result)
             }    
         })
@@ -137,6 +141,7 @@ noteModel.prototype.deleteNote = (noteId,callback) => {
             }
             else{
                 console.log("Delete Note",result)
+                client.set(result.id + data, result);
                 callback(null,result)
             }    
         })
@@ -515,7 +520,7 @@ noteModel.prototype.isArchived = ( noteId, archive,callback) => {
     }
     catch(error){
         console.log("isArchieve is catch");
-        
+        callback.status(400).send("isArchieve is catch")
     }
 }
 /**
@@ -587,6 +592,76 @@ noteModel.prototype.reminder = (noteId,reminderParams,callback) => {
     })
 }
 
+/**
+ * @description : Here i creating Schema for collaberator
+ */
+
+var collabSchema = mongoose.Schema({
+    userId : {
+        type : Schema.Types.ObjectId,
+        ref  : 'userSchema'
+    },
+    noteId : {
+        type : Schema.Types.ObjectId,
+        ref  : 'noteSchema' 
+    },
+    collabId : {
+        type : Schema.Types.ObjectId,
+        ref  : 'userSchema'
+    }
+},{
+    timestamps : true
+})
+
+var collab = mongoose.model('Collab',collabSchema)
+
+noteModel.prototype.saveCollab = (collabData,callback) => {
+    var data = new collab(collabData)
+    data.save((err,result) => {
+        if(err){
+            callback('Error in save collaborator data')
+        }
+        else{
+            callback(null,result)
+        }
+    })
+}
+noteModel.prototype.getDataByNoteId = (noteId,callback) => {
+console.log("dasjk;");
+    collab.find({noteId : noteId},(err,result) => {
+            if(err){
+                callback('Error in get data by note id model')
+            }
+            else{
+                console.log("get data by note id",result);
+                 callback(null,result)
+            }
+        })
+}
+
+noteModel.prototype.getCollabNotesUserId = (userId,callback) => {
+    collab.find({collabId : userId},(err,result) => { 
+        if(err){
+            callback('Error in get collaborator user id model')
+        }
+        else{
+            console.log( "get collab notes user id ",result);
+            callback(null,result)
+        }
+    })
+}
+
+noteModel.prototype.getCollabOwnerUserId = (ownerUserId,callback) => {
+    collab.find({userId : ownerUserId },(err,result) => {
+        if(err){
+            callback("Error in get collaborator owner user id")
+        }
+        else{
+         console.log("get collab owner user",result);
+            callback(null,result)
+        }
+    })
+}
 /**
  * @description : Here i export the noteModel.
  */

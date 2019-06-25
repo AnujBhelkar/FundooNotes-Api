@@ -46,7 +46,13 @@ routes.post('/archive',middle.usingRedis,noteController.isArchived)
 routes.post('/reminder',middle.usingRedis,noteController.reminder)
 routes.post('/saveLabelToNote',middle.usingRedis,noteController.savelabelToNote)
 routes.post('/deleteLabelToNote',middle.usingRedis,noteController.deletelabelToNote)
+routes.post('/saveCollaborator',middle.usingRedis,noteController.saveCollaborator)
 
+routes.post('/get',noteController.get)
+routes.post('/collabGet',noteController.collabGet)
+
+var mmm= require('../app/model/userModel')
+routes.get('/getSomething',mmm.getUserDetails)
 
 
 /**

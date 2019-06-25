@@ -8,6 +8,7 @@
  * @description : Here i call the notemodel file.
  */
 var noteModel = require('../app/model/noteModel')
+var userModel = require('../app/model/userModel')
 /**
  * @description : Here Creating Service for creating note.
  * @param  {* requested from frontend } req
@@ -50,9 +51,7 @@ exports.createNote = (req,res) => {
  */
 exports.getNote = (req,callback) => {
     try{
-        var id = {
-            userId  : req.decoded.payload._id
-        }
+        var id = req.decoded.payload._id
         noteModel.getNote(id,(err,result) => {
             if(err){
                 console.log("Error in get Note Services")
@@ -402,3 +401,232 @@ exports.reminder = (paramId,paramData,callback) => {
         }
     })
 }
+
+/**
+ * @param {* } collabData
+ * @param {* } callback
+ */
+exports.saveCollaborator = (collabData,callback) => {
+    noteModel.saveCollab(collabData , (err,result) => {
+        if(err){
+            callback(err)
+        }
+        else{
+            callback(null,result)
+        }
+    })
+}
+
+/**
+ * @param {* } userId
+ * @param {* } callback
+ */
+exports.getCollabNotesUserId = (userId,callback) => {
+    noteModel.getCollabNotesUserId(userId,(err,result) => {
+        if(err){
+            console.log("service error");
+            callback(err)
+        }
+        else{
+            callback(null,result)
+        }
+    })
+}
+
+// /**
+//  * @param {*} callback
+//  */ 
+// exports.getcollabDetails = (callback) => {
+//     userModel.
+// }
+
+/**
+ * @param {* requested from frontend } req
+ * @param {* response to backend } callback
+ */
+// noteModel.getCollabNotesUserId;
+// noteModel.getCollabOwnerUserId;
+// noteModel.getDataByNoteId;
+// userModel.getUserDetails;
+//  exports.get = (id,callback) => {
+//     noteModel.getNote(id,(err,result) => {
+//         if(err){
+//             callback("Error in getting note in get services")
+//         }
+//         else{
+//             var finalResult = { }
+//             userModel.getUserDetails(id,(errUser,resultUser) => {
+//                 if(errUser){
+//                     callback('Error in getting user Detail in get sevices')
+//                 }
+//                 else{
+//                     var noteOwner = {
+//                         firstName : resultUser.firstName,
+//                         lastName  : resultUser.lastName,
+//                         userId    : resultUser._id
+//                     }
+//                     for(var i = 0; i < result.length; i++ ){
+//                         var userDetails = {
+//                             owner : noteOwner,
+//                             note  : result[i],
+//                             collab : []
+//                         }
+//                         finalResult.push(userDetails)
+//                     }
+//                     var data; 
+//                     noteModel.getCollabOwnerUserId(id,(errCollab,resultOwnerCollab) => {
+//                         if(errCollab){
+//                             callback('Error in get collab owner user id')
+//                         }else{
+//                            // data = resultOwnerCollab.collabId
+//                             for(var i = 0 ; i < finalResult.length ; i++ ){
+//                                 for(var j = 0 ; j < resultOwnerCollab ; j++ ){
+//                                     if(finalResult[i].note._id.equals(resultOwnerCollab[j].noteId)){
+//                                         finalResult[i].collab.push(resultOwnerCollab[j].collabId)
+//                                     }
+//                                 }
+//                             }
+//                         }
+//                     })
+//                     console.log(data);
+                    
+//                     noteModel.getCollabNotesUserId(data,(collobNotesError, collobNotesResult) => {
+//                         if(collobNotesError){
+//                             callback('Error in collob notes Error ')
+//                         }
+//                         else{
+//                             var operations = []
+//                             console.log("dsfgadgsj",collobNotesResult);
+//                             for(var i = 0; i < collobNotesResult.length; i++ ){
+//                                 operations.push((function(collabData){
+//                                     return function(callback){  
+//                                         noteModel.getDataByNoteId(collabData.noteId,(errNote,getNoteResult) => {
+//                                             if(errNote){
+//                                                 callback("Error in getting data by note id")
+//                                             }
+//                                             else{
+//                                                 var collabArray = { }
+//                                                 for(var i = 0 ; i < getNoteResult ; i++ ){
+//                                                     collabArray.push(getNoteResult[i].collabUserId)
+//                                                 }
+//                                                 var collabNote = {
+//                                                     note : getNoteResult[0].noteId,
+//                                                     owner : getNoteResult[0].userId,
+//                                                     collab : collabArray
+//                                                 }
+//                                                 finalResult.push(collabNote)
+//                                                 callback(null,collabNote)
+//                                             }
+//                                         }) 
+//                                     }
+//                                 }) (collobNotesResult[i]) )
+//                             }
+//                             async.series(operations,(errorAsync,resultAsync) => {
+//                                 console.log(resultAsync);
+//                                 if(errorAsync){
+//                                     callback(errorAsync)
+//                                 }
+//                                 else{
+//                                  callback(null,finalResult)   
+//                                 }
+//                             })
+//                         }
+//                     })
+//                 }
+//             })
+//         }
+//     }) 
+//  }  
+
+/**
+ * @description : get collab notes 
+ * @param {* requested from frontend } data
+ * @param {* response to backend } callback
+ */
+
+exports.get = (data, callback) => {
+    var finalResult = [];
+    noteModel.getNote(data, (err, result) => {
+        if (err) {
+            callback(err);
+        } else {
+            userModel.getUserDetails(data, (errorUser, resultUser) => {                
+                if (errorUser) {
+                    callback(errorUser);
+                } else {
+                    const noteOwner = {
+                        firstName: resultUser[0].firstName,
+                        lastName: resultUser[0].lastName,
+                        _id : resultUser[0]._id
+                    }
+                    //console.log("final Result 244 " ,noteOwner);
+                    for (var i = 0; i < result.length; i++) {
+                        var userNote = {
+                            note: result[i],
+                            owner: noteOwner,
+                            collab: []
+                        }
+                        finalResult.push(userNote);
+                   // console.log("final Result  "+ i ,userNote);
+                    }
+                    noteModel.getCollabOwnerUserId(data, (errorCollab, resultOwnerCollab) => {
+                        if (errorCollab) {
+                            callback(errorCollab);
+                        } else {
+                            console.log("resulcollabowner  ", resultOwnerCollab);
+                            for (var i = 0; i < finalResult.length; i++) {
+                                for (var j = 0; j < resultOwnerCollab.length; j++) {
+                                    if (finalResult[i].note._id.equals(resultOwnerCollab[j].noteId)) {
+                                        finalResult[i].collab.push(resultOwnerCollab[j].collabId)
+                                    }
+                                }
+                            }
+                            callback(null, finalResult)
+                        }
+                    })
+                  
+                }
+            })
+        }
+    })
+
+}
+
+
+exports.collabGet = (data,callback) => { 
+      //console.log("final Result 2 " ,finalResult);
+    var finalResult = [ ]
+    noteModel.getCollabNotesUserId(data, (errorCollab, resultCollab) => {
+        if (errorCollab) {
+            callback(errorCollab);
+        } else {
+            console.log("get collab notes user id service",resultCollab);
+            var operations = [];
+            for (var i = 0; i < resultCollab.length; i++) {
+                console.log("dfsbkgs34678");
+                operations.push((function (collabData) {
+                        console.log("dfsbkgs34678566",resultCollab[i].noteId);
+                        noteModel.getDataByNoteId(collabData.noteId, (errorNote, resultNote) => {
+                            console.log("123 : ", resultNote);
+                            if (errorNote) {
+                                callback(errorNote)
+                            } else {
+                                var collabUserArray = [];
+                                for (var i = 0; i < resultNote.length; i++) {
+                                    collabUserArray.push(resultNote[i].collabId)
+                                }
+                                var collabNote = {
+                                    note: resultNote[0].noteId,
+                                    owner: resultNote[0].userId,
+                                    collab: collabUserArray
+                                }
+                                finalResult.push(collabNote);
+                                callback(null, collabNote)
+                            }
+                        })
+                })(resultCollab[i]))
+            }
+        }
+    })
+}
+

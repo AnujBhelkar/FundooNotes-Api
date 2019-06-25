@@ -27,19 +27,19 @@ describe('status and content',() => {
     /**
      * @description : It will create for testing Registration Api.
      */
-        // it('Registration',(done) => {
-        //     chai.request(server).post('/register').send(data.registration).end((err,res) =>{
-        //         if(err){
-        //             console.log("expect ==>",err)
-        //             err.should.have.status(400);
-        //         }
-        //         else{
-        //             console.log('expect Body ==>',res.body)
-        //             res.should.have.status(200);
-        //         }
-        //         done();
-        //     })
-        // })    
+        it('Registration',(done) => {
+            chai.request(server).post('/register').send(data.registration).end((err,res) =>{
+                if(err){
+                    console.log("expect ==>",err)
+                    err.should.have.status(400);
+                }
+                else{
+                    console.log('expect Body ==>',res.body)
+                    res.should.have.status(200);
+                }
+                done();
+            })
+        })    
     /**
      * @description : It will create for testing Confirmation Api.
      */            
@@ -315,19 +315,19 @@ describe('status and content',() => {
     /**
      * @description : It will create for testing delet Label to Note Api.
      */ 
-    // it("delete Label from Note",(done) => {
-    //     chai.request(server).post('/deleteLabelToNote').send(data.deleteLabelToNote).end((err,res) => {
-    //         if(err){
-    //             console.log("Expected Body ==> ",err);
-    //             err.should.have.status(400)                    
-    //         }
-    //         else{
-    //             console.log("Expected Body ==> ",res.body);
-    //             res.should.have.status(200)                    
-    //         }
-    //         done();
-    //     })
-    // })
+    it("delete Label from Note",(done) => {
+        chai.request(server).post('/deleteLabelToNote').send(data.deleteLabelToNote).end((err,res) => {
+            if(err){
+                console.log("Expected Body ==> ",err);
+                err.should.have.status(400)                    
+            }
+            else{
+                console.log("Expected Body ==> ",res.body);
+                res.should.have.status(200)                    
+            }
+            done();
+        })
+    })
     /**
      * @description : It will create for testing archive Api.
      */ 

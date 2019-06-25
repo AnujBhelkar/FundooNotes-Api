@@ -256,6 +256,25 @@ Model.prototype.resetPassword = (req,res) => {
     }
 }
 
+Model.prototype.getUserDetails = (id,res) => {
+    console.log("ultimate save");
+    try{
+    model.find({ _id : id},
+       // {note : 0 , password : 0},
+        function (err, result) {
+            if (err) {
+                return res(err);
+            } else {
+                return res(null,result);
+            }
+        })
+    }
+    catch(err){
+        console.log("Error in reseting Password catch block",err);
+        return res.send(err)
+    }
+};
+
  /**
  * @description : export function for accessing method of function
  */
