@@ -102,8 +102,8 @@ exports.login = (req,res) => {
                }
                var gentoken = tokens.generateToken(payload)
                //client.set('token',gentoken,redis.print)
-               client.set((result._id).toString(),gentoken,redis.print)
-               console.log((result.id).toString());
+               client.set(gentoken,gentoken,redis.print)
+               console.log(gentoken);
                
             //    client.get(result._id,(err,replay)=> {
             //        if(err)

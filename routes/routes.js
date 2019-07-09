@@ -24,9 +24,9 @@ var noteController = require('../controller/noteController')
 var routes = express.Router();
 
 routes.post('/register',userController.registration);
-routes.post('/verify/:token',middle.verification,userController.verification)
+routes.post('/confirm/:token',middle.verification,userController.verification)
 routes.post('/login',userController.login)
-routes.post('/verifyUser',userController.verifyUser)
+routes.post('/confirmUser',userController.verifyUser)
 routes.post('/resetPassword/:token',middle.verification,userController.resetPassword);
 routes.get('/item/:code',shortUrlController.shortFromOriginal);
 routes.post('/item',shortUrlController.renderOriginal)

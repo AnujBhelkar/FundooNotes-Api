@@ -9,6 +9,7 @@
  */
 var noteModel = require('../app/model/noteModel')
 var userModel = require('../app/model/userModel')
+var async = require('async')
 /**
  * @description : Here Creating Service for creating note.
  * @param  {* requested from frontend } req
@@ -545,88 +546,115 @@ exports.getCollabNotesUserId = (userId,callback) => {
  */
 
 exports.get = (data, callback) => {
-    var finalResult = [];
-    noteModel.getNote(data, (err, result) => {
-        if (err) {
-            callback(err);
-        } else {
-            userModel.getUserDetails(data, (errorUser, resultUser) => {                
-                if (errorUser) {
-                    callback(errorUser);
-                } else {
-                    const noteOwner = {
-                        firstName: resultUser[0].firstName,
-                        lastName: resultUser[0].lastName,
-                        _id : resultUser[0]._id
-                    }
-                    //console.log("final Result 244 " ,noteOwner);
-                    for (var i = 0; i < result.length; i++) {
-                        var userNote = {
-                            note: result[i],
-                            owner: noteOwner,
-                            collab: []
+    try{
+        var finalResult = [];
+        noteModel.getNote(data, (err, result) => {
+            if (err) {
+                callback(err);
+            } else {
+                userModel.getUserDetails(data, (errorUser, resultUser) => {                
+                    if (errorUser) {
+                        callback(errorUser);
+                    } else {
+                        const noteOwner = {
+                            firstName: resultUser[0].firstName,
+                            lastName: resultUser[0].lastName,
+                            _id : resultUser[0]._id
                         }
-                        finalResult.push(userNote);
-                   // console.log("final Result  "+ i ,userNote);
-                    }
-                    noteModel.getCollabOwnerUserId(data, (errorCollab, resultOwnerCollab) => {
-                        if (errorCollab) {
-                            callback(errorCollab);
-                        } else {
-                            console.log("resulcollabowner  ", resultOwnerCollab);
-                            for (var i = 0; i < finalResult.length; i++) {
-                                for (var j = 0; j < resultOwnerCollab.length; j++) {
-                                    if (finalResult[i].note._id.equals(resultOwnerCollab[j].noteId)) {
-                                        finalResult[i].collab.push(resultOwnerCollab[j].collabId)
+                        //console.log("final Result 244 " ,noteOwner);
+                        for (var i = 0; i < result.length; i++) {
+                            var userNote = {
+                                note: result[i],
+                                owner: noteOwner,
+                                collab: []
+                            }
+                            finalResult.push(userNote);
+                    // console.log("final Result  "+ i ,userNote);
+                        }
+                        noteModel.getCollabOwnerUserId(data, (errorCollab, resultOwnerCollab) => {
+                            if (errorCollab) {
+                                callback(errorCollab);
+                            } else {
+                                console.log("resulcollabowner  ", resultOwnerCollab);
+                                for (var i = 0; i < finalResult.length; i++) {
+                                    for (var j = 0; j < resultOwnerCollab.length; j++) {
+                                        if (finalResult[i].note._id.equals(resultOwnerCollab[j].noteId)) {
+                                            finalResult[i].collab.push(resultOwnerCollab[j].collabId)
+                                        }
                                     }
                                 }
+                                callback(null, finalResult)
                             }
-                            callback(null, finalResult)
-                        }
-                    })
-                  
-                }
-            })
-        }
-    })
-
+                        })
+                    
+                    }
+                })
+            }
+        })
+    }
+    catch(err){
+        callback.status(400).send('Catch get notes with collab')
+    }
 }
 
+/**
+ * @description : get collab notes 
+ * @param {* requested from frontend } data
+ * @param {* response to backend } callback
+ */
 
 exports.collabGet = (data,callback) => { 
       //console.log("final Result 2 " ,finalResult);
-    var finalResult = [ ]
-    noteModel.getCollabNotesUserId(data, (errorCollab, resultCollab) => {
-        if (errorCollab) {
-            callback(errorCollab);
-        } else {
-            console.log("get collab notes user id service",resultCollab);
-            var operations = [];
-            for (var i = 0; i < resultCollab.length; i++) {
-                console.log("dfsbkgs34678");
-                operations.push((function (collabData) {
-                        console.log("dfsbkgs34678566",resultCollab[i].noteId);
-                        noteModel.getDataByNoteId(collabData.noteId, (errorNote, resultNote) => {
-                            console.log("123 : ", resultNote);
-                            if (errorNote) {
-                                callback(errorNote)
-                            } else {
-                                var collabUserArray = [];
-                                for (var i = 0; i < resultNote.length; i++) {
-                                    collabUserArray.push(resultNote[i].collabId)
+    try{
+        var finalResult = [];
+        noteModel.getCollabNotesUserId(data, (errorCollab, resultCollab) => {
+            if (errorCollab) {
+                callback(errorCollab);
+            } else {
+                console.log("get collab notes user id service",resultCollab);
+                var operations = [];
+                for (var i = 0; i < resultCollab.length; i++) {
+                    operations.push((function (collabData) {
+                        return function(callback) {
+                        console.log(i,collabData);
+                            noteModel.getDataByNoteId(collabData.noteId, (errorNote, resultNote) => {
+                                if (errorNote) {
+                                    callback(errorNote)
+                                } else {
+                                    var collabUserArray = [];
+                                    for (var i = 0; i < resultNote.length; i++) {
+                                        collabUserArray.push(resultNote[i].collabId)
+                                    }
+                                    var collabNote = {
+                                        note: collabData.noteId,
+                                        owner: collabData.userId,
+                                        collab: collabUserArray
+                                    }
+                                    finalResult.push(collabNote);
+                                    console.log("asdhfj");
+                                    
+                                    callback(null, collabNote)
                                 }
-                                var collabNote = {
-                                    note: resultNote[0].noteId,
-                                    owner: resultNote[0].userId,
-                                    collab: collabUserArray
-                                }
-                                finalResult.push(collabNote);
-                                callback(null, collabNote)
-                            }
-                        })
-                })(resultCollab[i]))
+                            })
+                        }
+                    })(resultCollab[i]))
+                
+                    async.series(operations,(errorAsync,resultAsync) => {
+                        console.log("RESULT",resultAsync);
+                        if(errorAsync){
+                            callback(errorAsync)
+                        }
+                        else{
+                        console.log("final result ",finalResult);
+                            callback(null,finalResult)   
+                        }
+                    })
+                }
             }
-        }
-    })
+        })
+    }
+    catch(err){
+        callback.status(400).send('Catch collab notes ')
+    }
 }
 

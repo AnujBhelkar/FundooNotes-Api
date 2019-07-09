@@ -1,4 +1,4 @@
-/******************************************************************************************
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        /******************************************************************************************
  * @Purpose : To create for get the data from front end stored it into database           *
  * @file    : server.js                                                                   *
  * @author  : Anuj                                                                        *
@@ -19,7 +19,7 @@ var mongoose    = require('mongoose');
  */
 require('dotenv').config();
 
-//var cors        = require('cors')
+var cors = require('cors')
 /**
  * @description : Fetch all the paths from routes file 
  */
@@ -29,7 +29,7 @@ var githubRoutes = require('./routes/githubRoutes')
  * @description : create aap
  */
 var app = express();
-//app.use(cors)
+app.use(cors())
 /**
  * @description : BodyParser Middlewer 
  */
@@ -112,5 +112,29 @@ client.on('error',(err) => {
 //   changeStream.on('change', (change) => {
 
 //   });
+
+
+
+var expressWinston = require('express-winston');
+var winston = require('winston')
+app.use(expressWinston.logger({
+    transports : [
+        new winston.transports.Console()
+    ],
+     format : winston.format.combine(
+         winston.format.colorize(),
+         winston.format.json()
+     )
+}));
+
+app.use(expressWinston.errorLogger({
+    transports : [
+        new winston.transports.Console()
+    ],
+     format : winston.format.combine(
+         winston.format.colorize(),
+         winston.format.json()
+     )
+}));
 
 module.exports = app

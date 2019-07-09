@@ -84,7 +84,7 @@ genver.prototype.usingRedis = (req,res,next) => {
     //console.log((session).toString);
     console.log("fdasfdas",req.body);
     
-    const id = req.body.id;
+    const id = req.headers['token'];
     client.get(id,(err,replay) => {
        // console.log("All ABout Token",getId)     
         if(err){

@@ -14,7 +14,7 @@ var notification = require('../app/model/notificationModel')
  */
 exports.createNote = (req,res) => {
     try{
-        req.checkBody('id',"Id required").not().isEmpty();
+        // req.checkBody('id',"Id required").not().isEmpty();
         var errors = req.validationErrors();
         var responce = { };
         if(errors){
@@ -92,7 +92,7 @@ exports.createNote = (req,res) => {
  */
 exports.getAllNotes = (req, res ) => { //callback) => {
     try{ 
-        req.checkBody('id',"Id required").not().isEmpty();
+        // req.checkBody('id',"Id required").not().isEmpty();
         var errors = req.validationErrors();
         var responce = { };
         if(errors){
@@ -538,6 +538,10 @@ exports.isArchived = (req,res) => {
             
             var noteId = req.body.noteId;
             var archive = req.body.archive;
+            var obj ={
+             noteId : req.body.noteId,
+             archive : req.body.archive
+            }
             console.log("dsgds",noteId,archive);
             
             noteServices.isArchived(noteId,archive,(err,result) => {

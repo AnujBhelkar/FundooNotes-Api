@@ -148,9 +148,9 @@ Model.prototype.verification = (req,res) => {
   /**
    * @description : If user is verified then it will login otherwise not
    */
-Model.prototype.login =(req,callback) =>{
+Model.prototype.login =(data,callback) =>{
     try{
-        model.findOne({email : req.email},(err,result) => {
+        model.findOne({email : data.email},(err,result) => {
             //console.log("What is in result",result)
             if(err){
                 console.log("Please Enter Valid Email Address..!!")
@@ -167,7 +167,7 @@ Model.prototype.login =(req,callback) =>{
             }
             else{
                 
-                bcrypt.compare(req.password,result.password,(err,res)=> {
+                bcrypt.compare(data.password,result.password,(err,res)=> {
                     if(!res){
                         console.log("Password Incorrect");
                         return callback(err)

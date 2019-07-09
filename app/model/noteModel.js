@@ -74,7 +74,7 @@ noteModel.prototype.addNote = (req,callback) => {
         })
         add.save((err,result) => {
             if(err){
-                client.set(result.id + data, result);
+                // client.set(result.id + data, result);
                 console.log("Error in Saving Data",err)
                 callback(err)
             }
@@ -645,7 +645,6 @@ noteModel.prototype.getCollabNotesUserId = (userId,callback) => {
             callback('Error in get collaborator user id model')
         }
         else{
-            console.log( "get collab notes user id ",result);
             callback(null,result)
         }
     })
