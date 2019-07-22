@@ -243,6 +243,46 @@ exports.editDescription = (req,res) => {
 }
 
 /**
+ * @description : Here i get the request from frontend for upadte Color.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.updatecolor = (req,res) => {
+    try{
+        req.checkBody('noteId',"note Id required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.updatecolor(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log(" update color Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "update color Controller catch"
+        });
+    }
+}
+
+
+/**
  * @description : Here i get the request from frontend for adding label.  
  * @param {* requested from frontend } req
  * @param {* responce to backend} res
@@ -327,6 +367,8 @@ exports.updateLabel = (req,res) => {
  */
 exports.deleteLabel = (req,res) => {
     try{
+        console.log("label id is",req.body.labelId);
+        
         req.checkBody('labelId',"label id required").not().isEmpty();
         var errors = req.validationErrors();
         var responce = { };
@@ -476,7 +518,49 @@ exports.deletelabelToNote = (req,res) => {
             message : "delete label to note Controller catch"
         });
     }
-}          
+}         
+
+/**
+ * @description : Here i get the request from frontend for delete label from note.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.deleteReminderToNote = (req,res) => {
+    try{
+        console.log("reminder Body is ==>",req.body);
+        
+        req.checkBody('noteId',"note id required").not().isEmpty();
+        req.checkBody('reminder',"reminder required").not().isEmpty();
+        var errors = req.validationErrors();
+        var responce = { };
+        if(errors){
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
+        else{
+            noteServices.deleteReminderToNote(req.body,(err,result) => {
+                if(err || result === undefined) {
+                    responce.success = false;
+                    responce.error   = err;
+                    return res.status(400).send(responce);
+                }
+                else{
+                    responce.success = true;
+                    responce.result  = result;
+                    return res.status(200).send(responce);
+                }
+            })
+        }
+    }
+    catch(error){
+        console.log("delete Reminder to note Controller Catch ");
+        res.status(400).send({
+            success : false,
+            message : "delete Reminder to note Controller catch"
+        });
+    }
+}
 
 /**
  * @description : It handle trash note .  
@@ -485,18 +569,19 @@ exports.deletelabelToNote = (req,res) => {
  */
 exports.isTrashed = (req,res) => {
     try{
-        req.checkbody('noteId','noteId required ').not().isEmpty(); //mongoose.Types.ObjectId.isValid
-        var response = { };
+        // console.log("hey",req.body.noteId);
+        req.checkBody('noteId',"note id required").not().isEmpty();
         var errors = req.validationErrors();
+        var responce = { };
         if(errors){
-            response.status = false
-            response.error  = error
-            res.status(422).send(response)
-        } 
+            responce.success = false;
+            responce.errors  = errors;
+            return res.status(400).send(responce);
+        }
         else{
             var responseResult = { }
             var noteId = req.body.noteId;
-
+        //    console.log("controller noteID ==>",noteId);   
             noteServices.isTrashed(noteId,(err,result) => {
                 if(err){
                     responseResult.status = false
@@ -525,7 +610,7 @@ exports.isTrashed = (req,res) => {
 exports.isArchived = (req,res) => {
     try{
         req.checkBody('noteId','noteId required ').not().isEmpty();
-        req.checkBody('archive','archive required ').not().isEmpty();
+        // req.checkBody('archive','archive required ').not().isEmpty();
         var response = { };
         var errors = req.validationErrors();
         if(errors){
@@ -535,16 +620,10 @@ exports.isArchived = (req,res) => {
         } 
         else{
             var responseResult = { }
-            
             var noteId = req.body.noteId;
-            var archive = req.body.archive;
-            var obj ={
-             noteId : req.body.noteId,
-             archive : req.body.archive
-            }
-            console.log("dsgds",noteId,archive);
+            console.log("dsgds",noteId);
             
-            noteServices.isArchived(noteId,archive,(err,result) => {
+            noteServices.isArchived(noteId,(err,result) => {
                 if(err){
                     responseResult.status = false
                     responseResult.error = err
@@ -560,6 +639,91 @@ exports.isArchived = (req,res) => {
     }
     catch(err){
         console.log("Error catch in archived ");
+        res.send(err)
+    }
+}
+
+/**
+ * @description : It handle archived notes.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.getAllReminderNotes = (req,res) => {
+    try{
+        // req.checkBody('noteId','noteId required ').not().isEmpty();
+        // req.checkBody('archive','archive required ').not().isEmpty();
+        var response = { };
+        var errors = req.validationErrors();
+        if(errors){
+            response.status = false
+            response.error  = error
+            res.status(422).send(response)
+        } 
+        else{
+            var responseResult = { }
+            
+            var noteId = req.body.noteId;
+            var archive = req.body.archive;
+            var userId = req.decoded.payload._id
+            console.log("dsgds",noteId,archive);
+            
+            noteServices.getReminderNotes(userId,(err,result) => {
+                if(err){
+                    responseResult.status = false
+                    responseResult.error = err
+                    res.status(400).send(responseResult)
+                }
+                else{
+                    responseResult.status = true
+                    responseResult.result = result
+                    res.status(200).send(responseResult)
+                }
+            })
+        }
+    }
+    catch(err){
+        console.log("Error catch in get all reminders ");
+        res.send(err)
+    }
+}
+
+/**
+ * @description : It handle archived notes.  
+ * @param {* requested from frontend } req
+ * @param {* responce to backend} res
+ */
+exports.getArchiveNotes = (req,res) => {
+    try{
+        // req.checkBody('noteId','noteId required ').not().isEmpty();
+        // req.checkBody('archive','archive required ').not().isEmpty();
+        var response = { };
+        var errors = req.validationErrors();
+        if(errors){
+            response.status = false
+            response.error  = error
+            res.status(422).send(response)
+        } 
+        else{
+            var responseResult = { }
+            
+            var userId = req.decoded.payload._id
+            
+            noteServices.getArchiveNotes(userId,(err,result) => {
+                if(err){
+                    responseResult.status = false
+                    responseResult.error = err
+                    res.status(400).send(responseResult)
+                }
+                else{
+                    responseResult.status = true
+                    responseResult.result = result
+                    res.status(200).send(responseResult)
+                }
+            })
+        }
+    }
+    catch(err){
+        console.log("Error catch in get all archive Notes ");
         res.send(err)
     }
 }

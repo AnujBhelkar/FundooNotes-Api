@@ -25,7 +25,8 @@ exports.createNote = (req,res) => {
             description : req.body.description,
             reminder    : req.body.reminder,
             color       : req.body.color,
-            label       : req.body.label
+            label       : req.body.label,
+            archive     : req.body.archive
         }
         noteModel.addNote(data,(err,result) => {
             if(err){
@@ -151,6 +152,34 @@ exports.editDescription = (req,callback) => {
         return callback.status(400).send({
             success : false,
             message : "catch in edit title services"
+      })
+    }
+}
+
+/**
+ * @description : it will send update color data to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.updatecolor = (req,callback) => {
+    try{
+        var noteID = req.noteId;    
+        var colorParam = req.color;
+        noteModel.updatecolor(noteID,colorParam,(err,result) => {
+            if(err || result === undefined){
+                console.log("Error in updte color ");
+                return callback(err)
+            }
+            else{
+                console.log("color updated Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch in update color services"
       })
     }
 }
@@ -319,6 +348,33 @@ exports.deletelabelToNote = (req,callback) => {
     }
 }
 
+/**
+ * @description : it will delete reminder note data pass to model.
+ * @param   {* requested from frontend } req 
+ * @param   {* responce to backend } callback
+ */
+exports.deleteReminderToNote = (req,callback) => {
+    try{
+        var noteId = req.noteId;
+        var reminderParam = req.reminder;
+        noteModel.deleteReminderToNote(noteId,reminderParam,(err,result) => {
+            if(err){
+                console.log("Error in deleting reminder to note");
+                return callback(err)
+            }
+            else{
+                console.log("delete reminder from note Successfully",result);
+                return callback(null,result)
+            }
+        })
+    }
+    catch(err){
+        return callback.status(400).send({
+            success : false,
+            message : "catch delete reminder to note services"
+      })
+    }
+}
 
 /**
  * @description : it will send archieved data to model.
@@ -326,18 +382,27 @@ exports.deletelabelToNote = (req,callback) => {
  * @param   {* requested from frontend } paramData 
  * @param   {* responce to backend } callback
  */
-exports.isArchived = (paramId,paramData,callback) => {
-    noteModel.isArchived(paramId,paramData,(err,result) => {
-        if(err){
-            console.log(" Error in archived ");
-            callback(err)
+exports.isArchived = (paramId,callback) => {
+    noteModel.getArchiveStatus(paramId,(error,res) => {
+        if(error){
+            callback(error)
         }
         else{
-            console.log("archived service",result);
-            callback(null,result)
+            noteModel.isArchived(paramId,!res,(err,result) => {
+                if(err){
+                    console.log(" Error in archived ");
+                    callback(err)
+                }
+                else{
+                    console.log("archived service",!res,result);
+                    callback(null,result)
+                }
+            })
         }
     })
 }
+
+
 
 /**
  * @description : it will send trash data to model.
@@ -345,12 +410,16 @@ exports.isArchived = (paramId,paramData,callback) => {
  * @param   {* responce to backend } callback
  */
 exports.isTrashed = (paramId,callback) => {
+
+    console.log("hey services",paramId);
     noteModel.trashStatus(paramId,(err,status) => {
         if(err){
-            console.log("Error in trash status");
+            // console.log("Error in trash status");
             callback(err)
         }
         else{
+            // console.log("status of trash -->",status);
+            
             if(status === true){
                 var data = {
                     status : false
@@ -398,6 +467,42 @@ exports.reminder = (paramId,paramData,callback) => {
         }
         else{
             console.log("reminder service",result);
+            callback(null,result)
+        }
+    })
+}
+
+/**
+ * @description : it will send archieved data to model.
+ * @param   {* requested from frontend } userId
+ * @param   {* response to backend } callback
+ */
+exports.getReminderNotes = (userId,callback) => {
+    noteModel.getReminderNotes(userId,(err,result) => {
+        if(err){
+            console.log(" Error in archived ");
+            callback(err)
+        }
+        else{
+            console.log("archived service",result);
+            callback(null,result)
+        }
+    })
+}
+
+/**
+ * @description : it will send archieved data to model.
+ * @param   {* requested from frontend } userId
+ * @param   {* response to backend } callback
+ */
+exports.getArchiveNotes = (userId,callback) => {
+    noteModel.getArchiveNotes(userId,(err,result) => {
+        if(err){
+            console.log(" Error in archived ");
+            callback(err)
+        }
+        else{
+            console.log("archived service",result);
             callback(null,result)
         }
     })

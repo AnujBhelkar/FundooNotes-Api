@@ -23,9 +23,9 @@ var noteSchema = mongoose.Schema({
        type     : String,
        required : ['true','description required']
     },
-    reminder    : {
-        type    : String
-    },
+    reminder    : [ 
+        String
+    ],
     color       :{
         type    : String
     },
@@ -70,7 +70,8 @@ noteModel.prototype.addNote = (req,callback) => {
             description : req.description,
             reminder    : req.reminder,
             color       : req.color,
-            label       : req.label
+            label       : req.label,
+            archive     : req.archive
         })
         add.save((err,result) => {
             if(err){
@@ -141,7 +142,7 @@ noteModel.prototype.deleteNote = (noteId,callback) => {
             }
             else{
                 console.log("Delete Note",result)
-                client.set(result.id + data, result);
+                // client.set(result.id + data, result);
                 callback(null,result)
             }    
         })
@@ -221,6 +222,37 @@ noteModel.prototype.editDescription = (noteId,descParam,callback) => {
         });
     }
 }
+
+/**
+ * @description : it will update background color of note 
+ * @param {* requested from frontend } noteId  
+ * @param {* requested from frontend } colorParams
+ * @param {* response to backend     } callback
+ */
+noteModel.prototype.updatecolor = (noteId,colorParams,callback) => {
+    note.findOneAndUpdate({
+        _id : noteId
+    },{
+        $set : {
+            color : colorParams
+        }
+    },
+        {
+            upsert : true
+        },
+    
+    (err,result) =>{
+        if(err){
+            console.log("Error in updating color");
+            callback(err)
+        }
+        else{
+            console.log("update Color is ",result);
+            callback(null,result)
+        }
+    })
+}
+
 
 /**
  * @description  : It will save label in note.
@@ -335,6 +367,50 @@ noteModel.prototype.deletelabelToNote = (noteId,labelParam,callback) => {
         callback.status(400).send({
             success : false,
             message : "Catch the delete label from note Model Block"
+        });
+    }
+}
+
+/**
+ * @description  : It will delete reminder in note.
+ * @param   {* request from frontend} noteId
+ * @param   {* request from frontend} reminderParam 
+ * @param   {* response to backend} callback
+ */
+noteModel.prototype.deleteReminderToNote = (noteId,reminderParam,callback) => {
+    try{
+            console.log("reminder Param is ==>",noteId,reminderParam);
+            
+            var reminderNote = reminderParam;
+            note.findOneAndUpdate({
+                _id : noteId
+            },{
+                $pull : {
+                    reminder   : reminderNote
+                }
+            },(err,result) => {
+                if(err){
+                    
+                    callback(err)
+                }
+                else{
+                    console.log("Delete reminder Model ",result);
+                    let newArray = result.reminder;
+                    for(let i = 0; i < newArray.length; i++){
+                        if(newArray[i] === reminderNote){
+                            newArray.splice(i,1)
+                            return callback(null,newArray)
+                        }
+                    }
+                    
+                }
+            })
+    }        
+    catch(error){
+        console.log(" Catch the delete reminder from note Model Block");
+        callback.status(400).send({
+            success : false,
+            message : "Catch the delete reminder from note Model Block"
         });
     }
 }
@@ -498,7 +574,7 @@ noteModel.prototype.getAllLabel = (userId,callback) => {
  */
 noteModel.prototype.isArchived = ( noteId, archive,callback) => {
     try{
-        console.log("fsdsdf",noteId);
+        console.log("fsdsdf",noteId,archive);
         
         note.findOneAndUpdate({
             _id : noteId
@@ -529,7 +605,9 @@ noteModel.prototype.isArchived = ( noteId, archive,callback) => {
  * @param  {* responce to backend } callback
  */
 noteModel.prototype.trashStatus = (id,callback) => {
-    note.findOneAndUpdate = ({_id : id} ,(err,result) =>{
+    // console.log("ERror status",id);
+    
+    note.findOne({_id : id} ,(err,result) =>{
       if(err){
           console.log("Error in trash status");
           callback(err)
@@ -576,10 +654,14 @@ noteModel.prototype.reminder = (noteId,reminderParams,callback) => {
     note.findOneAndUpdate({
         _id : noteId
     },{
-        $set : {
+        $push : {
             reminder : reminderParams
         }
     },
+        {
+            upsert : true
+        },
+    
     (err,result) =>{
         if(err){
             console.log("Error in reminder");
@@ -587,9 +669,98 @@ noteModel.prototype.reminder = (noteId,reminderParams,callback) => {
         }
         else{
             console.log("reminder",result);
-            callback(null,result)
+            let res = result.reminder
+            res.push(reminderParams)
+            callback(null,res)
         }
     })
+}
+
+/**
+ * @description : it will get all reminder notes
+ * @param {* requested from frontend } userId  
+ */
+noteModel.prototype.getReminderNotes = (userId,callback) => {
+    try{
+        note.find({ userId : userId , reminder : !null },
+        (err,result) =>{
+            if(err){
+                console.log("Error in reminder");
+                callback(err)
+            }
+            else{
+                console.log("reminder",result);
+                callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log("getReminderNotes is catch");
+        callback.status(400).send("getReminderNotes is catch")
+    }
+}
+
+/**
+ * @description : it will get all archive notes
+ * @param {* requested from frontend } userId  
+ */
+noteModel.prototype.getArchiveNotes = (userId,callback) => {
+    try{
+        note.find({ userId : userId , archive : true },
+        (err,result) =>{
+            if(err){
+                console.log("Error in getting archive notes");
+                callback(err)
+            }
+            else{
+                console.log("Archive Notes",result);
+                callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log("getReminderNotes is catch");
+        callback.status(400).send("getReminderNotes is catch")
+    }
+}
+
+/**
+ * @description : it will get all archive status
+ * @param {* requested from frontend } userId  
+ */
+noteModel.prototype.getArchiveStatus = (id,callback) => {
+    console.log("id is",id);
+    
+    note.findOne({ _id : id},(err,result) =>{
+      if(err){
+          console.log("Error in archive status");
+          callback(err)
+      }  
+      else{
+          console.log("archive status",result.archive);
+          callback(null,result.archive)
+      }
+    })
+}
+
+noteModel.prototype.getReminderNotes = (userId,callback) => {
+    try{
+        note.find({ userId : userId , reminder : !null },
+        (err,result) =>{
+            if(err){
+                console.log("Error in reminder");
+                callback(err)
+            }
+            else{
+                console.log("reminder",result);
+                callback(null,result)
+            }
+        })
+    }
+    catch(error){
+        console.log("getReminderNotes is catch");
+        callback.status(400).send("getReminderNotes is catch")
+    }
 }
 
 /**

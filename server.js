@@ -80,9 +80,7 @@ app.get((req,res) => {
     res.json({message :" Welcome To Fundoo App "})
 })
 
-app.listen(port,() =>{
-    console.log(`${port} is listening your Request..`)
-})
+
 
 //app.use(session({secret : 'sshh',resave : false, saveUninitialized : true}))
 /**
@@ -136,5 +134,9 @@ app.use(expressWinston.errorLogger({
          winston.format.json()
      )
 }));
+
+app.listen(port,() =>{
+    console.log(`${port} is listening your Request..`)
+})
 
 module.exports = app

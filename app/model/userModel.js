@@ -10,6 +10,7 @@
   */
  var mongoose = require('mongoose');
  var bcrypt   = require('bcrypt');
+ var upload = require('../../middleware/fileUploadingServices')
  //var jwt      = require('jsonwebtoken');
  var tokenPayload = require('../../middleware/allAboutToken');
  var mail      = require('../../middleware/nodeMailer');
@@ -37,6 +38,9 @@
      isVerified :   {
         type        : Boolean,
         defaultValue: false,      
+     },
+     imageUrl :     {
+         type       : String
      }
  })
  /**
@@ -204,7 +208,7 @@ Model.prototype.verifyUser = (req,res) => {
                 console.log("token",token)
                 var url = `${process.env.resetPassword}/${token}` ;
                 console.log('Url',url)
-                //mail.sendEmail(url,req.email);
+                mail.sendEmail(url,req.email);
                 console.log("User Available")
                 res(null,result)
             }
@@ -219,33 +223,33 @@ Model.prototype.verifyUser = (req,res) => {
 /**
  * @description : here reseting Password
  */
-Model.prototype.resetPassword = (req,res) => {
+Model.prototype.resetPassword = (id,password,callback) => {
     try{
-        model.findOne({_id : req._id},(err,result) => {
+        model.findOne({_id : id},(err,result) => {
             if(err){
                 console.log(" Error in Authentication ")
                 res(err)
             }
             else{
-                console.log("pass",req.password,"cpass",req.confirmPassword)
-                if(req.password === req.confirmPassword){
-                    var newPass = bcrypt.hashSync(req.password,saltRound);
-                    model.updateOne({_id : req._id},
+                console.log("pass",password.password,"cpass",password.confirmPassword)
+                if(password.password === password.confirmPassword){
+                    var newPass = bcrypt.hashSync(password.password,saltRound);
+                    model.updateOne({_id : id},
                             {password : newPass} ,
                             (err,passSuccess) => {
                                 if(err){
                                     console.log("Error in Reset Password",result);
-                                    res(err)
+                                    return callback(err)
                                 }
                                 else{
-                                    console.log("Password change Successfully")
-                                    res(null,passSuccess)
+                                    console.log("Password change Successfully",passSuccess)
+                                    return callback(null,passSuccess)
                                 }
                             })
                 }
                 else{
                     console.log("Password Must Be Same ")
-                    res(err)
+                    return callback(err)
                 }
             }
         })
@@ -272,6 +276,34 @@ Model.prototype.getUserDetails = (id,res) => {
     catch(err){
         console.log("Error in reseting Password catch block",err);
         return res.send(err)
+    }
+};
+
+
+Model.prototype.uploadFile = (id,imageUrl,callback) => {
+    console.log("ultimate save");
+    try{
+        // const uploadImage = upload.single("image")
+        // uploadImage(req,res)
+    model.findOneAndUpdate({ _id : id},{
+        $set : {
+            imageUrl : imageUrl
+        }
+    },{
+        upsert : true
+    },
+       // {note : 0 , password : 0},
+        function (err, result) {
+            if (err) {
+                return callback(err);
+            } else {
+                return callback(null,result);
+            }
+        })
+    }
+    catch(err){
+        console.log("Error in reseting Password catch block",err);
+        return callback.send(err)
     }
 };
 

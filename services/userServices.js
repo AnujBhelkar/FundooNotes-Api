@@ -6,6 +6,7 @@
  ***********************************************************************************/
 
  var userModel = require('../app/model/userModel');
+ var upload = require('../middleware/fileUploadingServices')
 /**
  * @description : create service for registration.
  * @param   {* requested from frontend} req
@@ -108,12 +109,9 @@
   */
  exports.resetPassword = (req,res) => {
     try{
-        var data ={
-            _id : req.decoded.payload._id,
-            password : req.body.password,
-            confirmPassword : req.body.confirmPassword
-        }
-        userModel.resetPassword(data,(err,result) => {
+        id = req.decoded.payload._id;
+        password = req.body.password;
+        userModel.resetPassword(id,password,(err,result) => {
             if(err){
                 console.log("Service Error" , err)
                 res(err);
@@ -121,6 +119,45 @@
             else{
                 console.log("Service In ")
                 res(null,result)
+            }
+        })
+    }
+    catch(err){
+        console.log("Catch Error In services ",err)
+        res(err)
+    }
+ }
+
+
+ /**
+  * @description : create service for storing image Url
+  * @param   {* requested from frontend} req
+  * @param   {* responce to backend} res
+  */
+ exports.uloadFile = (req,res) => {
+    try{
+            id = req.decoded.payload._id;
+        const uploadImage = upload.single('image')
+        console.log("1234");
+        
+        uploadImage(req,res,(error,result) =>{
+            if(error){
+                res(error)
+            }
+            else{
+                imageUrl = req.file.location;
+                console.log(id,imageUrl);
+                
+                userModel.uploadFile(id,imageUrl,(err,result1) => {
+                    if(err){
+                        console.log("Service Error" , err)
+                        res(err);
+                    }
+                    else{
+                        console.log("Service In ")
+                        res(null,result1)
+                    }  
+                })     
             }
         })
     }

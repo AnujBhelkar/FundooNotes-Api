@@ -7,7 +7,7 @@
 
  var userServices = require('../services/userServices');
  var tokens = require('../middleware/allAboutToken')
- var upload = require('../services/fileUploadingServices')
+ var upload = require('../middleware/fileUploadingServices')
  /**
   * @description    : Registration of user.
   * @param  {* requested from frontend } req
@@ -207,8 +207,8 @@ exports.resetPassword = (req,res) => {
 exports.uploadFile= (req,res) => {
     try{
         var responce = { };
-        const singleUpload = upload.single('image')
-        singleUpload(req,res,(err,result) => {
+        // const singleUpload = upload.single('image')
+        userServices.uloadFile(req,(err,result) => {
             if(err){
                 responce.sucess = false,
                 responce.error  = err,
@@ -216,7 +216,7 @@ exports.uploadFile= (req,res) => {
             }
             else{
                 responce.sucess = true,
-                responce.result = req.file.location,
+                responce.result = result,
                 res.status(200).send(responce);
             }
         })
