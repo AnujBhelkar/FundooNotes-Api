@@ -5,309 +5,287 @@
  * @since       : 22-05-2019                                                              *
  ******************************************************************************************/
 
- /**
+/**
   *@description:  Import the mongoose Library and bcrypt Package
   */
- var mongoose = require('mongoose');
- var bcrypt   = require('bcrypt');
- var upload = require('../../middleware/fileUploadingServices')
- //var jwt      = require('jsonwebtoken');
- var tokenPayload = require('../../middleware/allAboutToken');
- var mail      = require('../../middleware/nodeMailer');
- //var session = require('express-session')
- /**
-  * @description : Here Creating Schema 
+var mongoose = require('mongoose')
+var bcrypt = require('bcrypt')
+var upload = require('../../middleware/fileUploadingServices')
+// var jwt      = require('jsonwebtoken');
+var tokenPayload = require('../../middleware/allAboutToken')
+var mail = require('../../middleware/nodeMailer')
+// var session = require('express-session')
+/**
+  * @description : Here Creating Schema
   */
- var userSchema = new mongoose.Schema({
-     firstName  : {
-         type       : String,
-         required   : [true,'First Name Required']
-     },
-     lastName : {
-         type       : String,
-         required   : [true,"Last Name required"] 
-     },
-     email    : {
-         type       : String,
-         required   : [true,"Email Reuired for registration"]
-     },
-     password  : {
-         type       : String,
-         required   : [true,"Password required"]
-     },
-     isVerified :   {
-        type        : Boolean,
-        defaultValue: false,      
-     },
-     imageUrl :     {
-         type       : String
-     }
- })
- /**
+var userSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: [true, 'First Name Required']
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last Name required']
+  },
+  email: {
+    type: String,
+    required: [true, 'Email Reuired for registration']
+  },
+  password: {
+    type: String,
+    required: [true, 'Password required']
+  },
+  isVerified: {
+    type: Boolean,
+    defaultValue: false
+  },
+  imageUrl: {
+    type: String
+  }
+})
+/**
   * @description : Creating Model and put the data in fundoo collection
   */
-  var model = mongoose.model('fundoo',userSchema);
- // module.exports.model1 = mongoose.model('fundoo',Schema);
-  var saltRound = 10;
-  function Model() { }
+var model = mongoose.model('fundoo', userSchema)
+// module.exports.model1 = mongoose.model('fundoo',Schema);
+var saltRound = 10
+function Model () { }
 /**
  * @description : Here registration of user
  */
-  Model.prototype.registration = (req,res) => {
-        try{
-            model.findOne({ 'email' : req.email },(err,data) => {
-                if(err){
-                    console.log('Error in Registration ', err);
-                    return res(err)
-                }
-                else if(data != null){
-                    console.log("Email Already Exists")
-                    return res(err)
-                }
-                else{
-                        console.log(data);
+Model.prototype.registration = (req, res) => {
+  try {
+    model.findOne({ email: req.email }, (err, data) => {
+      if (err) {
+        console.log('Error in Registration ', err)
+        return res(err)
+      } else if (data != null) {
+        console.log('Email Already Exists')
+        return res(err)
+      } else {
+        console.log(data)
 
-                       // var pass = req.password;
-                        req.password = bcrypt.hashSync(req.password,saltRound);
-                        var newUser = new model({
-                            "firstName"       : req.firstName,
-                            "lastName"        : req.lastName,
-                            "email"           : req.email,
-                            "password"        : req.password,
-                            "isVerified"      : 'false'
-                            
-                        });                  
-                        const payload = {
-                        email    : req.email
-                    
-                        }
-                    //     var token = tokenPayload.generateToken(payload)
-                    //     localStorage.setItem('token','token');
-                    //   console.log("New User",newUser)
-                    //     newUser.save((err,result) => {
-                    //         if(err){
-                    //             console.log("Error In Save Registration")
-                    //             res(err)
-                    //         }
-                    //         else{
-                    //             console.log("Registration Successfully..!!")
-                    //             var url = 'http://localhost:3000/'+ token ;
-                    //             console.log('Url',url)
-                    //             // mail.sendEmail(url,newUser.email,pass);
-                    //             res(null,result);
-                    //         }
-                    //     }) 
-                        
-                        newUser.save()
-                            .then((response) => {
-                                var token = tokenPayload.generateToken(payload)
-                                console.log("token",token)
-                                var url = `${process.env.isVerified}/${token}` ;
-                                console.log('Url',url)
-                                //mail.sendEmail(url,newUser.email,pass);
-                                //localStorage.setItem('token',token)
-                                console.log("Registration Successfully..!!")
-                                return res(null,response);
-                            })
-                            .catch(err => {
-                                console.log("Error In Registration", err);
-                                return res(err);
-                            })
-            }
-        
+        // var pass = req.password;
+        req.password = bcrypt.hashSync(req.password, saltRound)
+        var newUser = new model({
+          firstName: req.firstName,
+          lastName: req.lastName,
+          email: req.email,
+          password: req.password,
+          isVerified: 'false'
+
         })
-    }
-    catch(err){
-        console.log("Error in registration catch block",err);
-        res(err)
-    }
+        const payload = {
+          email: req.email
+
+        }
+        //     var token = tokenPayload.generateToken(payload)
+        //     localStorage.setItem('token','token');
+        //   console.log("New User",newUser)
+        //     newUser.save((err,result) => {
+        //         if(err){
+        //             console.log("Error In Save Registration")
+        //             res(err)
+        //         }
+        //         else{
+        //             console.log("Registration Successfully..!!")
+        //             var url = 'http://localhost:3000/'+ token ;
+        //             console.log('Url',url)
+        //             // mail.sendEmail(url,newUser.email,pass);
+        //             res(null,result);
+        //         }
+        //     })
+
+        newUser.save()
+          .then((response) => {
+            var token = tokenPayload.generateToken(payload)
+            console.log('token', token)
+            var url = `${process.env.isVerified}/${token}`
+            console.log('Url', url)
+            // mail.sendEmail(url,newUser.email,pass);
+            // localStorage.setItem('token',token)
+            console.log('Registration Successfully..!!')
+            return res(null, response)
+          })
+          .catch(err => {
+            console.log('Error In Registration', err)
+            return res(err)
+          })
+      }
+    })
+  } catch (err) {
+    console.log('Error in registration catch block', err)
+    res(err)
   }
-  /**
+}
+/**
    * @description : conformation of user for login
    */
-Model.prototype.verification = (req,res) => {
-    try{
-            //return model.isVerified = true;
-            console.log("Decoded Email ",req.email);
-        model.findOneAndUpdate({email : req.email},
-            {"isVerified":true},
-            (err,result) => {
-            if(err) {
-                console.log("Token on decode email",err);
-                res(err)
-            }
-            else{
-            // model.isVerified = true;
-            console.log("Verify successfully", result)
-            res(null,result)
-            //return res(null,result)
-            }
-        })
-    }
-    catch(err){
-        console.log("Error in user email verification catch block");
-        res(err)
-    }
+Model.prototype.verification = (req, res) => {
+  try {
+    // return model.isVerified = true;
+    console.log('Decoded Email ', req.email)
+    model.findOneAndUpdate({ email: req.email },
+      { isVerified: true },
+      (err, result) => {
+        if (err) {
+          console.log('Token on decode email', err)
+          res(err)
+        } else {
+          // model.isVerified = true;
+          console.log('Verify successfully', result)
+          res(null, result)
+          // return res(null,result)
+        }
+      })
+  } catch (err) {
+    console.log('Error in user email verification catch block')
+    res(err)
   }
-  /**
+}
+/**
    * @description : If user is verified then it will login otherwise not
    */
-Model.prototype.login =(data,callback) =>{
-    try{
-        model.findOne({email : data.email},(err,result) => {
-            //console.log("What is in result",result)
-            if(err){
-                console.log("Please Enter Valid Email Address..!!")
-                callback(err)
-            }
-            else if(result === null){
-                console.log("Invalid User")
-                return callback(err)
-            }
-            else if(result.isVerified === null || !result.isVerified  ){
-            //  console.log("verify or not ",model.isVerified)
-                console.log("verify First..!!");
-                callback(err)
-            }
-            else{
-                
-                bcrypt.compare(data.password,result.password,(err,res)=> {
-                    if(!res){
-                        console.log("Password Incorrect");
-                        return callback(err)
-                    }
-                    else{
-                        console.log("Login Successfully");
-                        return callback(null,result)
-                    }
-                })
-                    
-            }
+Model.prototype.login = (data, callback) => {
+  try {
+    model.findOne({ email: data.email }, (err, result) => {
+      // console.log("What is in result",result)
+      if (err) {
+        console.log('Please Enter Valid Email Address..!!')
+        callback(err)
+      } else if (result === null) {
+        console.log('Invalid User')
+        return callback(err)
+      } else if (result.isVerified === null || !result.isVerified) {
+        //  console.log("verify or not ",model.isVerified)
+        console.log('verify First..!!')
+        callback(err)
+      } else {
+        bcrypt.compare(data.password, result.password, (err, res) => {
+          if (!res) {
+            console.log('Password Incorrect')
+            return callback(err)
+          } else {
+            console.log('Login Successfully')
+            return callback(null, result)
+          }
         })
-    }
-    catch(err){
-        console.log("Error in login catch block",err);
-        res(err)   
-    }
+      }
+    })
+  } catch (err) {
+    console.log('Error in login catch block', err)
+    res(err)
+  }
 }
 /**
  * @description : Verify User Bye Email id for forget password
  */
-Model.prototype.verifyUser = (req,res) => {
-    try{
-        model.findOne({email : req.email},(err,result) => {
-            if(err){
-                console.log("No User Found..!!")
-                res(err)
-            }
-            else{
-                var payload = {
-                    _id : result._id
-                }
-                var token = tokenPayload.generateToken(payload)
-                console.log("token",token)
-                var url = `${process.env.resetPassword}/${token}` ;
-                console.log('Url',url)
-                mail.sendEmail(url,req.email);
-                console.log("User Available")
-                res(null,result)
-            }
-        })
-    }
-    catch(err){
-        console.log("Error forget verifcation catch block",err);
+Model.prototype.verifyUser = (req, res) => {
+  try {
+    model.findOne({ email: req.email }, (err, result) => {
+      if (err) {
+        console.log('No User Found..!!')
         res(err)
-    }
+      } else {
+        var payload = {
+          _id: result._id
+        }
+        var token = tokenPayload.generateToken(payload)
+        console.log('token', token)
+        var url = `${process.env.resetPassword}/${token}`
+        console.log('Url', url)
+        mail.sendEmail(url, req.email)
+        console.log('User Available')
+        res(null, result)
+      }
+    })
+  } catch (err) {
+    console.log('Error forget verifcation catch block', err)
+    res(err)
+  }
 }
 
 /**
  * @description : here reseting Password
  */
-Model.prototype.resetPassword = (id,password,callback) => {
-    try{
-        model.findOne({_id : id},(err,result) => {
-            if(err){
-                console.log(" Error in Authentication ")
-                res(err)
-            }
-            else{
-                console.log("pass",password.password,"cpass",password.confirmPassword)
-                if(password.password === password.confirmPassword){
-                    var newPass = bcrypt.hashSync(password.password,saltRound);
-                    model.updateOne({_id : id},
-                            {password : newPass} ,
-                            (err,passSuccess) => {
-                                if(err){
-                                    console.log("Error in Reset Password",result);
-                                    return callback(err)
-                                }
-                                else{
-                                    console.log("Password change Successfully",passSuccess)
-                                    return callback(null,passSuccess)
-                                }
-                            })
-                }
-                else{
-                    console.log("Password Must Be Same ")
-                    return callback(err)
-                }
-            }
-        })
-    }
-    catch(err){
-        console.log("Error in reseting Password catch block",err);
+Model.prototype.resetPassword = (id, password, callback) => {
+  try {
+    model.findOne({ _id: id }, (err, result) => {
+      if (err) {
+        console.log(' Error in Authentication ')
         res(err)
-    }
+      } else {
+        console.log('pass', password.password, 'cpass', password.confirmPassword)
+        if (password.password === password.confirmPassword) {
+          var newPass = bcrypt.hashSync(password.password, saltRound)
+          model.updateOne({ _id: id },
+            { password: newPass },
+            (err, passSuccess) => {
+              if (err) {
+                console.log('Error in Reset Password', result)
+                return callback(err)
+              } else {
+                console.log('Password change Successfully', passSuccess)
+                return callback(null, passSuccess)
+              }
+            })
+        } else {
+          console.log('Password Must Be Same ')
+          return callback(err)
+        }
+      }
+    })
+  } catch (err) {
+    console.log('Error in reseting Password catch block', err)
+    res(err)
+  }
 }
 
-Model.prototype.getUserDetails = (id,res) => {
-    console.log("ultimate save");
-    try{
-    model.find({ _id : id},
-       // {note : 0 , password : 0},
-        function (err, result) {
-            if (err) {
-                return res(err);
-            } else {
-                return res(null,result);
-            }
-        })
-    }
-    catch(err){
-        console.log("Error in reseting Password catch block",err);
-        return res.send(err)
-    }
-};
-
-
-Model.prototype.uploadFile = (id,imageUrl,callback) => {
-    console.log("ultimate save");
-    try{
-        // const uploadImage = upload.single("image")
-        // uploadImage(req,res)
-    model.findOneAndUpdate({ _id : id},{
-        $set : {
-            imageUrl : imageUrl
+Model.prototype.getUserDetails = (id, res) => {
+  console.log('ultimate save')
+  try {
+    model.find({ _id: id },
+      // {note : 0 , password : 0},
+      function (err, result) {
+        if (err) {
+          return res(err)
+        } else {
+          return res(null, result)
         }
-    },{
-        upsert : true
-    },
-       // {note : 0 , password : 0},
-        function (err, result) {
-            if (err) {
-                return callback(err);
-            } else {
-                return callback(null,result);
-            }
-        })
-    }
-    catch(err){
-        console.log("Error in reseting Password catch block",err);
-        return callback.send(err)
-    }
-};
+      })
+  } catch (err) {
+    console.log('Error in reseting Password catch block', err)
+    return res.send(err)
+  }
+}
 
- /**
+Model.prototype.uploadFile = (id, imageUrl, callback) => {
+  console.log('ultimate save')
+  try {
+    // const uploadImage = upload.single("image")
+    // uploadImage(req,res)
+    model.findOneAndUpdate({ _id: id }, {
+      $set: {
+        imageUrl: imageUrl
+      }
+    }, {
+      upsert: true
+    },
+    // {note : 0 , password : 0},
+    function (err, result) {
+      if (err) {
+        return callback(err)
+      } else {
+        return callback(null, result)
+      }
+    })
+  } catch (err) {
+    console.log('Error in reseting Password catch block', err)
+    return callback.send(err)
+  }
+}
+
+/**
  * @description : export function for accessing method of function
  */
-  module.exports = new Model()
+module.exports = new Model()
