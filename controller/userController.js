@@ -80,6 +80,7 @@ exports.verification = (req, res) => {
 exports.login = (req, res) => {
   try {
     var responce = { }
+	console.log("body is",req.body)
     userServices.login(req.body, (err, result) => {
       if (err || result === undefined) {
         responce.sucess = false,
